@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: pytomproject
+Version: 0.0.3
+Summary: BSC Python Practice for Bioinformatics.
+Home-page: https://github.com/PhoxSpark/pytom-project
+Author: Luis Gracia
+Author-email: luisgracia@phoxspark.com
+License: UNKNOWN
+Description: # pytom-project
+        Project for collect atom data from PDB database for the BSC, made it with Python.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown

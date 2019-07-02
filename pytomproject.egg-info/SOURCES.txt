@@ -1,0 +1,10 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+pytomproject/__init__.py
+pytomproject/download_pdb.py
+pytomproject.egg-info/PKG-INFO
+pytomproject.egg-info/SOURCES.txt
+pytomproject.egg-info/dependency_links.txt
+pytomproject.egg-info/top_level.txt

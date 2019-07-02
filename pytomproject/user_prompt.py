@@ -5,7 +5,6 @@ def question_y_n(question):
     the user answer first character and make it lower for return and 
     testing.
     """
-
     answer = ''
     while(answer != 'n' and answer != 'y'):
         print(question)
@@ -14,6 +13,12 @@ def question_y_n(question):
     return answer
 
 def text_input(request, min_lenght, max_lenght, character_size):
+    """
+    Send the request for the user, the minimum lenght and the maximum lenght,
+    also you can set if the return will be upper or lower. If you don't care
+    about if it's upper or lower, you can put an empty string on that camp,
+    then it will be ignored.
+    """
     prequisites_acomplished = False
     while(prequisites_acomplished == False):
         user_input = input(request)

@@ -7,7 +7,6 @@ def set_name_and_download_url():
     Set and create download URL and return a tupla with the url and the 
     pdb name (the name can be whatever the user want, is for the file).
     """
-
     DEFAULT_URL = "https://files.rcsb.org/download/"
 
     answer = user_prompt.question_y_n("Do you want to set a custom URL? ")
@@ -31,7 +30,6 @@ def download_pdb(url, pdb_name):
     program will need this file to have it located but it can be changed
     directly on this function.
     """
-    
     PDB_SAVE_LOCATION = "~/.PytomProject/Downloads"
 
     print("Checking if directory exists...")
@@ -63,6 +61,3 @@ def download_pdb(url, pdb_name):
         print("Download of %s failed." % url)
     else:
         print("File downloaded correctly on %s" % PDB_SAVE_LOCATION)
-
-url, pdb_name = set_name_and_download_url()
-download_pdb(url, pdb_name)

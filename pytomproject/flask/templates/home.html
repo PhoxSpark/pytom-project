@@ -1,12 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Home</h1>
-</body>
-</html>
+{% extends "layout.html" %}
+{% block content %}
+
+<h1 class="mt-5">Welcome to Pytom Project!</h1>
+<p class="lead">
+    This project is for the Barcelona 
+    Supercomputing Center for practicing programming in Python 
+    and working in programming environments.
+</p>
+<p class="lead">
+    If you found some of this useful or interesting, you can
+    actually download the source code on GitHub following
+    <a href="https://github.com/PhoxSpark/pytom-project"> this link</a>
+    so feel free doing whathever you want with it.
+</p>
+<h2 class="mt-5">Pytom (Python + Atom)</h2>
+<p class="lead">
+    As I try to clarify with his name, Pytom is a program made for
+    actually download an organism file (PDB) and look for concrete
+    atoms. For example, take the 2KI5 organism from PDB databases
+    and search the information of all his carbon atoms. This is not
+    so useful at a glance, but the objective is to learn how to work
+    with frameworks, Git and public repositories.
+</p>
+<p class="lead">
+    Of course the code can be improved with new functions or with
+    better code (I'm not a master, you know), and maybe I will
+    take it once finished for adding more features, but at this 
+    moment the main objective is clear: Take information of concrete
+    atoms from concrete organisms.
+</p>
+<h2 class="mt-5">What I'm seeing?</h2>
+<p class="lead">
+    What you are actually seeing is a WebApp made with the 
+    microframework Flask. You may know it or even use it, but for
+    me is all new and exciting! In the future I'm looking to learn
+    how to use proper frameworks like Django or so, but for this 
+    project flask is enugh (actually I'm falling in love with it!).
+</p>
+<h2 class="mt-5">There is almost no content nor functionalities!</h2>
+<p class="lead">
+    Of course! This project is in development, it will be ended 
+    officialy on 2019 august 1st. After that, I will take vacations
+    followed by returning to class (I study Bioinformatics). Perhaps 
+    in the future I will improve this project if it's worth it, so
+    don't expect so much content here despites of my source code on
+    GitHub or the actual functionality of this program.
+</p>
+
+
+{% endblock content %}

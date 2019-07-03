@@ -1,6 +1,6 @@
 import urllib.request
 import os
-import pytomproject.user_prompt as user_prompt
+import pytomproject.user_prompt as pytomproject
 
 def make_url(url_no_file = "https://files.rcsb.org/download/", organism_entry = "2ki5"):
     """

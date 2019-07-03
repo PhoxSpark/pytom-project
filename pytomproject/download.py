@@ -1,63 +1,52 @@
 import urllib.request
 import os
-import user_prompt
+import pytomproject.user_prompt as user_prompt
 
-def set_name_and_download_url():
+def make_url(url_no_file = "https://files.rcsb.org/download/", organism_entry = "2ki5"):
     """
-    Set and create download URL and return a tupla with the url and the 
-    pdb name (the name can be whatever the user want, is for the file).
+    Takes the download URL without the file of the PDB database and the organism entry 
+    and converts it in to a download link for the PDB file.
+
+    Returns the full URL for download.
     """
-    DEFAULT_URL = "https://files.rcsb.org/download/"
+    print("Making URL...")
+    url = url_no_file + organism_entry + ".pdb"
+    print("Url %s created." % url)
 
-    answer = user_prompt.question_y_n("Do you want to set a custom URL? ")
-    if(answer == 'y'):
-        url = user_prompt.text_input("URL Has to be something like: https://files.rcsb.org/download/ \n", 0, 200, "upper")
-        if(url[-1] != '/'):
-            url += '/'
-    else:
-        url = DEFAULT_URL
-
-    pdb_entry = user_prompt.text_input("Enter the entry of the organism (Ex: 2KI5): ", 0, 10, "lower")
-    pdb_name = user_prompt.text_input("Enter the name for the file (Ex: herpesvirus1): ", 0, 100, "") + ".pdb"
-    url += pdb_entry + ".pdb"
-
-    return url, pdb_name
-
-def download_pdb(url, pdb_name):
+    
+    return url
+    
+def download_url(url = None, pdb_name = "downloaded_pdb", pdb_save_location = "~/.PytomProject/Downloads"):
     """
-    Take the url and pdb_name for download the file with custom name on
-    a concrete location. Better to not change the location because the
-    program will need this file to have it located but it can be changed
-    directly on this function.
+    Receive the url, file name and save location and download the file of the url called
+    "pdb_name" and saves it on "pdb_save_location".
+
+    Return True if the download was successful and False if it wasn't.
     """
-    PDB_SAVE_LOCATION = "~/.PytomProject/Downloads"
+
 
     print("Checking if directory exists...")
-    if(os.path.exists(PDB_SAVE_LOCATION)):
-        print("Directory %s exist." % PDB_SAVE_LOCATION)
+    if(os.path.exists(pdb_save_location)):
+        print("Directory %s exist." % pdb_save_location)
     else:
-        print("Making directory...")
+        print("Directory %s don't exists, creating it..." % pdb_save_location)
         try:
-            os.makedirs(PDB_SAVE_LOCATION)
+            os.makedirs(pdb_save_location)
         except OSError:
-            print("Creation of the directory %s failed" % PDB_SAVE_LOCATION)
+            print("Creation of the directory %s failed" % pdb_save_location)
         else:
-            print("Successfully created the directory %s" % PDB_SAVE_LOCATION)
-    
-    if(os.path.exists(PDB_SAVE_LOCATION + pdb_name)):
-        print("File %s alredy exist! It will be overwrited." % pdb_name)
-        answer = user_prompt.question_y_n("Do you want to continue?")
-        if(answer == 'n'):
-            raise SystemExit(0)
-    else:
-        print("File %s don't exist, it will be created." % pdb_name)
+            print("Successfully created the directory %s" % pdb_save_location)
 
-    PDB_SAVE_LOCATION = PDB_SAVE_LOCATION + pdb_name
-    
+    print("Creating download path")
+
     print("Beginning file download...")
     try:
-        urllib.request.urlretrieve(url, PDB_SAVE_LOCATION)
+        urllib.request.urlretrieve(url, pdb_save_location + pdb_name + ".pdb")
     except ValueError:
         print("Download of %s failed." % url)
+        downloaded = False
     else:
-        print("File downloaded correctly on %s" % PDB_SAVE_LOCATION)
+        print("File downloaded correctly on %s" % pdb_save_location)
+        downloaded = True
+
+    return downloaded    

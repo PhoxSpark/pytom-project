@@ -13,7 +13,6 @@ def make_url(url_no_file = "https://files.rcsb.org/download/", organism_entry = 
     url = url_no_file + organism_entry + ".pdb"
     print("Url %s created." % url)
 
-    
     return url
     
 def download_url(url = None, pdb_name = "downloaded_pdb", pdb_save_location = "~/.PytomProject/Downloads"):

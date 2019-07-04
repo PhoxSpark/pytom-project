@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <h1 class="mt-5">Sign Up</h1>
+    {% include 'pages_content/loginregister_message.html' %}
+
+    {% include 'pages_content/register_forms.html' %}
+
+    <div class="border-top pt-3">
+        <small class="text-muted">
+            Alredy have an account? <a class="ml-2" href="{{ url_for('login') }}">Sign In</a>
+        </small>
+    </div>
+
+{% endblock content %}

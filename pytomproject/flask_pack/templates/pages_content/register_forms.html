@@ -1,0 +1,18 @@
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"></legend>
+
+                {% include 'pages_content/forms/username.html' %}
+
+                {% include 'pages_content/forms/password.html' %}
+
+                {% include 'pages_content/forms/confirm.html' %}
+
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>

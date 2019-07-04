@@ -1,21 +1,21 @@
 import unittest
 from unittest.mock import patch
-import pytomproject.download as download
+import pytomproject.download_pdb as download_pdb
 import pytomproject.user_prompt as user_prompt
 
-class TestDownloadPDB(unittest.TestCase):
+class TestDownload_pdbPDB(unittest.TestCase):
 
     def test_make_url(self):
         organism_entry = "2ki5"
         url_no_file = "https://files.rcsb.org/download/"
-        url1 = download.make_url()
-        url2 = download.make_url(url_no_file, organism_entry)
+        url1 = download_pdb.make_url()
+        url2 = download_pdb.make_url(url_no_file, organism_entry)
         self.assertEqual(url1, url2)
         self.assertEqual(url1, url_no_file+organism_entry+".pdb")
     
-    def test_download_pdb(self):
+    def test_download_pdb_pdb(self):
         url = "https://files.rcsb.org/download/2ki5.pdb"
-        self.assertTrue(download.download_url(url))
+        self.assertTrue(download_pdb.download_url(url))
 
 class TestUserPrompt(unittest.TestCase):
 

@@ -15,7 +15,7 @@ def make_url(url_no_file = "https://files.rcsb.org/download/", organism_entry = 
 
     return url
     
-def download_url(url = None, pdb_name = "downloaded_pdb", pdb_save_location = "~/.PytomProject/Downloads"):
+def download_url(url = None, pdb_name = "downloaded_pdb", pdb_save_location = "Downloads"):
     """
     Receive the url, file name and save location and download the file of the url called
     "pdb_name" and saves it on "pdb_save_location".

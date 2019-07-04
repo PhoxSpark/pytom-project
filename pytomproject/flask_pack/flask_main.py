@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, flash, redirect
 from pytomproject.flask_pack.forms import RegistrationForm, LoginForm
+from pytomproject.download_pdb import make_url
 app = Flask(__name__)
 
 """
@@ -13,7 +14,7 @@ app.config['SECRET_KEY'] = '58b3c9537fdf0925ad973f2cfb50f48c'
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template('home.html', title="Home")
+    return render_template('home.html', title="Home", url_make=make_url())
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -34,4 +35,4 @@ def register():
         return redirect(url_for('home'))
     return render_template('register.html', title="Register", form=form)
 
-app.run(debug=True)
+#app.run(debug=True)

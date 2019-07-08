@@ -24,8 +24,7 @@ class Object_PDB():
     path = ""
     name = ""
     pdb_dictionary = {}
-    atom_list = {}
-    atom_list_sorted = {}
+    atom_list = []
 
 
     #------------------------------------------------------------------------------
@@ -43,15 +42,13 @@ class Object_PDB():
 
         self.pdb_dictionary = None
         self.atom_list = None
-        self.atom_list_sorted = None
         self.pdb_dictionary = {}
-        self.atom_list = {}
-        self.atom_list_sorted = {}
+        self.atom_list = []
         print(self.pdb_dictionary)
         self.make_url(url_no_file, organism_entry)
         self.download_url(pdb_name, pdb_save_location)
         self.make_pdb_dictionary()
-        self.make_atom_lists()
+        self.make_atom_list()
 
     #------------------------------------------------------------------------------
     # Reset dictionary
@@ -63,16 +60,32 @@ class Object_PDB():
     #------------------------------------------------------------------------------
     # Make atom lists
     #------------------------------------------------------------------------------
-    def make_atom_lists(self):
-        index = 0
+    def make_atom_list(self):
+        """
+        Extract all the classified PDB data from the PDB dictionary in to another
+        dictionary but without classify for manipulate the output.
+        """
         for entries1 in self.pdb_dictionary.items():
             for entries2 in entries1[1].items():
-                self.atom_list.update({index: {}})
-                for atoms in entries2[1].items():
-                    self.atom_list[index].update({atoms[0]: atoms[1]})
-                index += 1
-        #self.atom_list_sorted = sorted(self.atom_list, key=itemgetter(self.atom_list_sorted[0]['Order']))
-        #print(self.atom_list_sorted)
+                self.atom_list.append(entries2[1])
+
+    #------------------------------------------------------------------------------
+    # Make atom lists setting the atom
+    #------------------------------------------------------------------------------
+    def make_atom_list_atom(self, atom_name):
+        """
+        Extract all the classified PDB data from the PDB dictionary in to another
+        dictionary but without classify for manipulate the output.
+        It does the same thing as the function above, except it takes the atom name
+        specified.
+        """
+        result = []
+        for atoms in self.atom_list:
+            if(atoms["Name"] == atom_name):
+                result.append(atoms)
+        self.atom_list = None
+        self.atom_list = result
+        
     #------------------------------------------------------------------------------
     # Make PDB_Dictionary
     #------------------------------------------------------------------------------

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1 class="mt-5">This is the Pytom Tool</h1>
+<p class="lead">
+    There is the main functionality of this program, here you
+    can look for your json made of a PDB using parameters on
+    the same navigation bar of your browser or using CURL on 
+    a terminal and putting the URL. There is some options 
+    that you can customize for the creation of the json file
+    and all of them are listed on the bottom of this page,
+    make sure to read the possibilities to get the PDB data
+    that you want. Of course this Pytom tool can be used as 
+    an API, due to his simple returns in .json.
+</p>
+
+<p>
+    The URL for use the tool is (if you are running in local): <a href="http://localhost:5000/pytom/jsonify">http://localhost:5000/pytom/jsonify</a>
+</p>
+
+<p>
+    There is an example of use: 
+    <a href="http://localhost:5000/pytom/jsonify?organism=2ki5">http://localhost:5000/pytom/jsonify?organism=2ki5</a>, 
+    running this without parameters (everything after the ?) like the above URL will return a default demo output 
+    with the organism 2KI5.
+</p>
+
+<h1 class="lead">IN THE FUTURE, HERE WILL BE A FORM FOR EASY AND GRAPHIC USE!</h1>
+
+<p class="lead">
+    Available options:
+</p>
+
+<ul class="lead">
+    <li>
+        "?organism=", (first parameter allways) return the JSON file of the organism, classified by it's atom names.
+    </li>
+    <li>
+        "&sorted=", y to show an unclassified atom list sorted by it's appaerance order, n to show the list without ordering.
+    </li>
+</ul>
+
+{% endblock content %}

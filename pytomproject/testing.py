@@ -4,21 +4,23 @@ import unittest
 from unittest.mock import patch
 import pytomproject.functions_classes as functions_classes
 
-class TestDownload_pdbPDB(unittest.TestCase):
+class Test_Class_PDB(unittest.TestCase):
 
-    def test_make_url(self):
-        organism_entry = "2ki5"
-        url_no_file = "https://files.rcsb.org/download/"
-        url1 = functions_classes.make_url()
-        url2 = functions_classes.make_url(url_no_file, organism_entry)
-        self.assertEqual(url1, url2)
-        self.assertEqual(url1, url_no_file+organism_entry+".pdb")
-    
-    def test_download_pdb_pdb(self):
-        url = "https://files.rcsb.org/download/2ki5.pdb"
-        self.assertTrue(functions_classes.download_url(url))
+    def test_class_pdb(self):
+        """
+        Test if the class it's correctly initialized with his atributes
+        using te default inputs.
+        """
+        pdb = functions_classes.Object_PDB()
+        self.assertEqual(pdb.organism, "2ki5")
+        self.assertEqual(pdb.name, "downloaded_pdb.pdb")
+        self.assertEqual(pdb.url, "https://files.rcsb.org/download/2ki5.pdb")
+        self.assertEqual(pdb.path, "Downloads")
+        self.assertIsNotNone(pdb.pdb_dictionary)
 
-class TestUserPrompt(unittest.TestCase):
+
+
+class Test_User_Prompt(unittest.TestCase):
 
     @patch('builtins.input', return_value='yes')
     def test_question_y(self, input):

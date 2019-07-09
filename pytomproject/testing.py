@@ -6,7 +6,7 @@ import pytomproject.functions_classes as functions_classes
 
 class Test_Class_PDB(unittest.TestCase):
 
-    def test_class_pdb(self):
+    def test_class_pdb_initialization(self):
         """
         Test if the class it's correctly initialized with his atributes
         using te default inputs.

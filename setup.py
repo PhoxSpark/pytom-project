@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pytomproject",
-    version="0.0.6",
+    version="0.0.8",
     author="Luis Gracia",
     author_email="luisgracia@phoxspark.com",
     description="BSC Python Practice for Bioinformatics.",

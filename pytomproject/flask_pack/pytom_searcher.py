@@ -163,7 +163,13 @@ class Object_PDB():
     # Set function friendly ranges
     #------------------------------------------------------------------------------
     def set_max_and_mins(self, datamin = None, datamax = None):
+        """
+        This function takes a minimum and maximum and determine if their are valid.
+        If there is no max or min, they will be assigned to an exagerated number with
+        the objective of get an "until last" range.
 
+        It returns minimum and maximum value.
+        """
         logging.info("Creating a rang with max or minimum specified. If it's not specified it will take almost infinite value (negative for min, positive for max)")
         minimum = -999999999
         maximum = 999999999

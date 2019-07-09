@@ -1,13 +1,4 @@
-import urllib.request
-import os, logging
-from operator import itemgetter
-from flask import jsonify
-
-#-----------------Log block-------------------
-for handler in logging.root.handlers[:]:
-    logging.root.removeHandler(handler)
-logging.basicConfig(level=logging.INFO)
-#---------------------------------------------
+import urllib, os, logging
 
 #==============================================================================
 # Classes
@@ -31,6 +22,7 @@ class Object_PDB():
     name = ""
     pdb_dictionary = {}
     atom_list = []
+    invalid = True
 
 
     #------------------------------------------------------------------------------
@@ -46,25 +38,34 @@ class Object_PDB():
         # Important!!! If I don't reset those "arrays" they don't delete it's content,
         # nor even in a new object!!!
 
-        logging.info("Class initializing")
-        logging.info("Setting empty atributes")
+        logging.info("Class initializing...")
+    
+        logging.info("Setting empty atributes...")
         self.pdb_dictionary = None
+        logging.debug("PDB_DICTIONARY = None")
         self.atom_list = None
+        logging.debug("ATOM_LIST = None")
         self.pdb_dictionary = {}
-        logging.info("PDB_DICTIONARY restarted")
+        logging.debug("PDB_DICTIONARY restarted")
         self.atom_list = []
-        logging.info("ATOM_LIST restarted")
+        logging.debug("ATOM_LIST restarted")
 
-        logging.info("Filling important data and downloading PDB")
-        logging.info("Creating URL")
+        logging.info("Atributes are empty, filling them with important data from the PDB specified (%s)..." % organism_entry)
+
+        logging.info("Creating URL...")
         self.make_url(url_no_file, organism_entry)
-        logging.info("Downloading to path using URL")
+        logging.info("URL %s created, Downloading PDB from it..." % self.url)
         self.download_url(pdb_name, pdb_save_location)
-        logging.info("Extracting data from PDB to dictionary")
-        self.make_pdb_dictionary()
-        logging.info("Making list of atoms with less data")
-        self.make_atom_list()
-        logging.info("Initialization successful")
+        if(self.invalid == False):
+            logging.info("File downloaded, extracting data to a dictionary...")
+            self.invalid = False
+            self.make_pdb_dictionary()
+            logging.info("Data extracted successfuly, making list...")
+            self.make_atom_list()
+            logging.info("List created successfuly. Initialization completed.")
+        else:
+            logging.error("Object can't be maded with a failed download!")
+        
 
     #------------------------------------------------------------------------------
     # Make atom list
@@ -74,44 +75,78 @@ class Object_PDB():
         Extract all the classified PDB data from the PDB dictionary in to another
         dictionary but without classify for manipulate the output.
         """
-        logging.info("Making Atom list")
+        logging.info("Making Atom list...")
+
         for entries1 in self.pdb_dictionary.items():
-            logging.debug("Accessing to dictionary items row")
             for entries2 in entries1[1].items():
-                logging.debug("Adding atom to atom_list")
                 self.atom_list.append(entries2[1])
-        logging.info("Atom list created successfully")
+
+        logging.info("Atom list created successfully.")
 
     #------------------------------------------------------------------------------
     # Select camps
     #------------------------------------------------------------------------------
     def select_camps(self, data, camp):
         
-        logging.info("Selecting specified camps from atom list and aplying it")
+        logging.info("Selecting specified camps from atom list and applying it...")
+        coincidences = 0
         result = []
-        for atoms in self.atom_list:
-            if(atoms[camp] == data):
-                logging.debug("Coincidence found")
-                result.append(atoms)
+        for selection in data:
+            logging.info("Looking for %s" % selection)
+            for atoms in self.atom_list:
+                if(atoms[camp] == selection):
+                    result.append(atoms)
+                    coincidences += 1
+
+        logging.info("%i coincidences found!" % coincidences)
+        logging.info("Applying changes...")
         self.atom_list = None
         self.atom_list = result
-        logging.info("Changes applied on atom list")
+
+        logging.info("Changes applied on atom list.")
         
     #------------------------------------------------------------------------------
     # Select range
     #------------------------------------------------------------------------------
     def select_range(self, datamin, datamax, camp):
         
-        logging.info("Selecting specified rang from atom list and aplying it")
+
+        logging.info("Selecting specified rang from atom list and aplying it...")
+        coincidences = 0
         result = []
         for atoms in self.atom_list:
-            if(atoms[camp] < datamax and atoms[camp] > datamin):
-                logging.debug("Coincidence found")
+            if(atoms[camp] < float(datamax) and atoms[camp] > float(datamin)):
                 result.append(atoms)
+                coincidences += 1
+
+        logging.info("%i coincidences found!" % coincidences)
+        logging.info("Applying changes...")
         self.atom_list = None
         self.atom_list = result
-        logging.info("Changes applied on atom list")
+        
+        logging.info("Changes applied on atom list.")
 
+    #------------------------------------------------------------------------------
+    # Select unnaccurate values
+    #------------------------------------------------------------------------------
+    def select_no_accurate(self, data, camp):
+
+        logging.info("Selecting specified camps (float) from atom list without an accurate filter and applying it...")
+        coincidences = 0
+        result = []
+        for selection in data:
+            logging.info("Looking for %s" % selection)
+            for atoms in self.atom_list:
+                if(int(atoms[camp]) == selection):
+                    result.append(atoms)
+                    coincidences += 1
+
+        logging.info("%i coincidences found!" % coincidences)
+        logging.info("Applying changes...")
+        self.atom_list = None
+        self.atom_list = result
+
+        logging.info("Changes applied on atom list.")
         
     #------------------------------------------------------------------------------
     # Set function friendly ranges
@@ -127,7 +162,7 @@ class Object_PDB():
         if(datamax != None):
             logging.info("Maximum specified, setting it to %f" % datamax)
             maximum = datamax
-        
+        logging.info("Range created successfuly, returning it.")
         return minimum, maximum
 
 
@@ -139,22 +174,20 @@ class Object_PDB():
         Export every atom of the downloaded PDB into dictionaries, classifing them
         by its atom names.
         """
-        logging.info("Starting to make PDB dictionary from PDB file")
-        logging.info("Opening PDB file in read mode")
+        logging.info("Starting to make PDB dictionary from PDB file.")
+        logging.info("Opening PDB file in read mode.")
         pdb_file = open(self.path + self.name, "r")
-        logging.info("Starting index")
+        logging.info("PDB file aparently opened.")
+
+        logging.info("Starting index...")
         index_atom = {}
         index_all = 0
-        logging.info("Reading PDB lines")
+        logging.info("Trying to read PDB lines...")
         for lines in pdb_file:
-            logging.debug("Testing if the line starts with ATOM")
             if(lines.startswith("ATOM")):
-                logging.debug("Selecting atom name for classification")
                 atom_name = lines[12:16].strip(' ')
                 index_all += 1
-                logging.debug("Testing if %s exists in dictionary" % atom_name)
                 if(atom_name not in self.pdb_dictionary):
-                    logging.debug("%s don't exists, creating it and filling it with data" % atom_name)
                     index_atom[atom_name] = 0
                     self.pdb_dictionary[atom_name] = {index_atom[atom_name]:
                     {"Organism": self.organism,
@@ -176,7 +209,6 @@ class Object_PDB():
                     "ElementSymbol": lines[76:78].strip(' ').strip('\n') or None
                     }}
                 else:
-                    logging.debug("%s exists, adding data" % atom_name)
                     index_atom[atom_name] += 1
                     self.pdb_dictionary[atom_name].update({index_atom[atom_name]:
                     {"Organism": self.organism,
@@ -197,7 +229,7 @@ class Object_PDB():
                     "SegmentID": lines[72:75].strip(' ') or None,
                     "ElementSymbol": lines[76:78].strip(' ').strip('\n') or None
                     }})
-        logging.info("Dictionary created successfuly")
+        logging.info("Dictionary created successfuly. %i Atoms found." % index_all)
 
     #------------------------------------------------------------------------------
     # Make URL
@@ -227,35 +259,36 @@ class Object_PDB():
         Return True if the download was successful and False if it wasn't.
         """
         file_exists = False
-        logging.info("Starting the download procedure")
-        logging.info("Creating pdb file name")
+        logging.info("Starting the download procedure.")
+        logging.info("Creating pdb file name.")
         pdb_name = pdb_name + self.organism
         pdb_save_location = pdb_save_location + "/"
         logging.info("Download file name is: %s" % pdb_name + ".pdb")
         logging.info("Checking if %s exists" % pdb_save_location)
         if(os.path.exists(pdb_save_location)):
-            logging.info("%s exists, PDB will be downloaded here" % pdb_save_location)
+            logging.info("%s exists, PDB will be downloaded here." % pdb_save_location)
         else:
-            logging.warning("%s don't exists, trying to make it" % pdb_save_location)
+            logging.warning("%s don't exists, trying to make it." % pdb_save_location)
             try:
                 os.makedirs(pdb_save_location)
             except OSError:
-                logging.critical("Can't make %s, make sure you have enough permissions" % pdb_save_location)
+                logging.critical("Can't make %s, make sure you have enough permissions." % pdb_save_location)
             else:
-                logging.info("Directory exist, looking for old download files")
+                logging.info("Directory exist, looking for old download files.")
                 if(os.path.exists(pdb_save_location + pdb_name + ".pdb")):
-                    logging.info("Old download found, it will be used")
+                    logging.info("Old download found, it will be used.")
                     file_exists = True
         if(not file_exists):
             try:
-                logging.info("Trying to download from URL")
+                logging.info("Trying to download from URL.")
                 urllib.request.urlretrieve(self.url, pdb_save_location + pdb_name + ".pdb")
-            except ValueError:
-                logging.error("Download from %s failed! Make sure you writed correctly the URL!" % self.url)
+            except urllib.error.URLError:
+                logging.critical("Download from %s failed! Make sure you writed correctly the URL!" % self.url)
             else:
-                logging.info("File downloaded from %s successfuly" % self.url)
+                logging.info("File downloaded from %s successfuly." % self.url)
+                self.invalid = False
 
-        logging.info("Setting new data in object atributes")
+        logging.info("Setting new data in object atributes.")
         self.path = pdb_save_location
         self.name = pdb_name + ".pdb"
 
@@ -275,9 +308,11 @@ def question_y_n(question=""):
 
     Returns 'y' or 'n'
     """
+    logging.info("Starting simple question procedure...")
     answer = ''
     while(answer != 'n' and answer != 'y'):
         answer = input("Yes (y) or no (n): ")
         answer = str(answer[0]).lower()
+    logging.info("Procedure finished, returning answer...")
     return answer
 

@@ -1,14 +1,15 @@
 import sys, logging, os
 sys.path.append(".")
 import pytomproject.flask_pack.flask_main as flask_main
+import pytomproject.general_functions as general_functions
+
+argument = []
+for argv in sys.argv:
+    argument.append(argv)
 
 def main():
-    logging.debug("******************************************************************")
-    logging.debug("********************* Pytom initialized **************************")
-    logging.debug("******************************************************************")
-    logging.info("Starting Flask Framework")
+    general_functions.initialize_logger(argument)
     try:
-        pass
         flask_main.run_flask()
     except Exception:
         logging.error("Can't initialize Flask, no more information obtained.")

@@ -1,11 +1,11 @@
 import urllib, os, logging
 
 #==============================================================================
-# Classes
+# Pytom Searcher
 #==============================================================================
 
 #------------------------------------------------------------------------------
-# PDB
+# Class PDB
 #------------------------------------------------------------------------------
 
 class Object_PDB():
@@ -131,22 +131,33 @@ class Object_PDB():
     #------------------------------------------------------------------------------
     def select_no_accurate(self, data, camp):
 
-        logging.info("Selecting specified camps (float) from atom list without an accurate filter and applying it...")
-        coincidences = 0
-        result = []
+        logging.info("Looking if the given data is a number or a string...")
+        go_to_accurate = False
         for selection in data:
-            logging.info("Looking for %s" % selection)
-            for atoms in self.atom_list:
-                if(int(atoms[camp]) == selection):
-                    result.append(atoms)
-                    coincidences += 1
+            if(type(selection) == str):
+                logging.warning("Detected string! Can't apply a non accurate select.")
+                go_to_accurate = True
+                break
+        if(go_to_accurate == False):
+            logging.info("No strings in Data, non accurate select will proceed...")
+            coincidences = 0
+            result = []
+            for selection in data:
+                logging.info("Looking for %s" % selection)
+                for atoms in self.atom_list:
+                    if(int(atoms[camp]) == selection):
+                        result.append(atoms)
+                        coincidences += 1
 
-        logging.info("%i coincidences found!" % coincidences)
-        logging.info("Applying changes...")
-        self.atom_list = None
-        self.atom_list = result
+            logging.info("%i coincidences found!" % coincidences)
+            logging.info("Applying changes...")
+            self.atom_list = None
+            self.atom_list = result
 
-        logging.info("Changes applied on atom list.")
+            logging.info("Changes applied on atom list.")
+        else:
+            logging.info("Calling select in normal mode...")
+            self.select_camps(data, camp)
         
     #------------------------------------------------------------------------------
     # Set function friendly ranges
@@ -292,27 +303,94 @@ class Object_PDB():
         self.path = pdb_save_location
         self.name = pdb_name + ".pdb"
 
-#==============================================================================
-# Functions
-#==============================================================================
+    #------------------------------------------------------------------------------
+    # Select statement
+    #------------------------------------------------------------------------------
+    def select_function(self, select, organism):
+                    
+        """
+        Select statement for use with PDB
+        
+        This custom select can take a range of values, a list of accurate values
+        or a list of general values (ignoring decimals). The sintax it's unique
+        (unfortunately), but it can be used in the URL of flask and it has pretty
+        simple options.
 
-#------------------------------------------------------------------------------
-# Question Y/N
-#------------------------------------------------------------------------------
-def question_y_n(question=""):
-    """
-    Send them an answer and it will return a 'y' or 'n'. It will not 
-    continue with answers differents than Yes or No. It only takes 
-    the user answer first character and make it lower for return and 
-    testing.
+        Sintax: This statement comes before the organism, it starts with 
+        "&select=" (without quotes). The default order for the values are:
+        1. Value: Value inside of the camp of a PDB that we want to select. 
+                It's a list so it accepts multiple values separated by ",".
+                
+        2. Camp: The camp is the container of values that we are looking for,
+                for example: Name. It's case sensitive.
 
-    Returns 'y' or 'n'
-    """
-    logging.info("Starting simple question procedure...")
-    answer = ''
-    while(answer != 'n' and answer != 'y'):
-        answer = input("Yes (y) or no (n): ")
-        answer = str(answer[0]).lower()
-    logging.info("Procedure finished, returning answer...")
-    return answer
+        3. Mode: There are 3 different modes:
 
+            Normal: It will take the values (integer/float) and select the same 
+            without considering decimals.
+
+            Range: Takes two values and show all the data between them.
+
+            Accurate: Takes a list of floats and return the exact coincidences.
+
+        Example of use standard:    ?organism=2ki5&select=40,41;X;normal
+        Example of alternative use: ?organism=2ki5&select=mode:range;value:40,42;camp:X
+
+        This two examples do almost the same.
+        """
+
+        # This part will order the input in to a list
+        logging.info("Spliting the string...")
+        select = select.split(';')
+        select_list = [None, None, None]
+        logging.info("Checking data and ordering them...")
+        for values in select:
+            if(values.startswith("value:")):
+                select_list[0] = values.replace("value:", '')
+
+            elif(values.startswith("camp:")):
+                select_list[1] = values.replace("camp:", '')
+
+            elif(values.startswith("mode:")):
+                select_list[2] = values.replace("mode:", '')
+
+            else:
+                logging.info("No custom sintax specified.")
+                logging.warning("If you are having problems, don't use custom sintax with default sintax. &select=10;TempFactor;mode:accurate is not equal to &select=10;TempFactor;accurate")
+                select_list = select
+
+        select_list[0] = select_list[0].split(',')
+        
+        logging.info("Arguments added to the list: %s, this have 3 data requirements so every other data will be ignored. Proceeding to call the function to apply to PDB object." % select_list)
+        
+        #This will determine the mode and act in consequence calling the existing functions to do the work.
+        if(select_list[2] == "normal"):
+            logging.info("Normal mode recogniced, proceeding...")
+            self.select_no_accurate(select_list[0], select_list[1])
+
+        elif(select_list[2] == "range"):
+            logging.info("Range mode recogniced, looking for two values...")
+
+            if(len(select_list[0]) == 2):
+                logging.info("Found two values, are the same?")
+
+                if(select_list[0][0] != select_list[0][1]):
+                    logging.info("The values %s aren't equal, sorting..." % select_list[0])
+                    select_list[0] = sorted(select_list[0])
+                    logging.info("The values are now sorted, calling function to apply range on the PDB...")
+                    self.select_range(select_list[0][0], select_list[0][1], select_list[1])
+                    logging.info("Range applyied.")
+
+                else:
+                    logging.error("The values are equal, try with normal mode.")
+
+            else:
+                logging.error("Wrong number of values, expected 2.")
+                
+
+        elif(select_list[2] == "accurate"):
+            logging.info("Accurate mode recogniced, proceeding...")
+            self.select_camps(select_list[0], select_list[1])
+            
+        else:
+            logging.error("The specified mode (%s) is not recogniced, select will not proceed." % select_list[2])

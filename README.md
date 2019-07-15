@@ -66,5 +66,6 @@ Pytom can do some things, still is a bit empty. There are some to do things that
   2. All organism of a specie download
   3. Multi camp filter
   4. Read the docs documentation
-  5. Forms on Pytom URL
+  5. Forms on Pytom URL for easy query
   6. Read more data from the PDB
+  7. Specify a different PDB URL download

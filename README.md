@@ -69,3 +69,4 @@ Pytom can do some things, still is a bit empty. There are some to do things that
   5. Forms on Pytom URL for easy query
   6. Read more data from the PDB
   7. Specify a different PDB URL download
+  8. Make an "only API mode" for easy use without background processing (maybe can't be done)

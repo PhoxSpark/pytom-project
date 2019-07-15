@@ -27,7 +27,9 @@ Pytom can handle some arguments to edit your JSON output. Those arguments are us
 
 ### Main function, organism
 The main function of the Pytom is the look for organism function. This is the syntax:
+
 ***localhost:5000/pytom?organism=2ki5***
+
 This will return the JSON file of the PDB 2KI5. Pretty simple to use, every program that handle URL downloads can use it as an API.
 
 ***NOTE: The first argument starts with ?, every next argument has to start with &.***
@@ -44,10 +46,15 @@ Even if you don't use it, it's allways in use because the default output of this
 
 ### Select statement
 The select statement allows the user to apply filters. It's used on a concrete way but it's relatively simple and flexible. Here is the syntax:
+
 ***localhost:5000/pytom?organism=2ki5&select=CA;name;accurate***
+
 or:
+
 ***localhost:5000/pytom?organism=2ki5&select=mode:range;camp:x;value:1,5***
+
 the next is ***not allowed***, if you specify the type you can't use non specified values:
+
 ***localhost:5000/pytom?organism=2ki5&select=value:CA;name;accurate***
 
 The select statement has 3 modes: Normal (it will ignore decimals), Accurate (it looks for exact value) and range (it takes two values and select everything between). Normally, you can add more than one values on a camp and even more than one organism, but at this moment it only accepts one camp at the same time.

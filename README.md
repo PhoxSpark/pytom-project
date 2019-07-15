@@ -55,9 +55,9 @@ The select statement has 3 modes: Normal (it will ignore decimals), Accurate (it
 ## To-do list
 Pytom can do some things, still is a bit empty. There are some to do things that I wan't to implement (the list can be expanded):
 
-  · Species classification
-  · All organism of a specie download
-  · Multi camp filter
-  · Read the docs documentation
-  · Forms on Pytom URL
-  · Read more data from the PDB
+  1. Species classification
+  2. All organism of a specie download
+  3. Multi camp filter
+  4. Read the docs documentation
+  5. Forms on Pytom URL
+  6. Read more data from the PDB

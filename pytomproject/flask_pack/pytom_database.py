@@ -70,20 +70,25 @@ def download_url(pdb_name, pdb_save_location, url, organism):
     pdb_save_location = pdb_save_location + "/"
     logging.info("Download file name is: %s" % pdb_name + ".pdb")
     logging.info("Checking if %s exists" % pdb_save_location)
+
     if(os.path.exists(pdb_save_location)):
         logging.info("%s exists, PDB will be downloaded here." % pdb_save_location)
     else:
         logging.warning("%s don't exists, trying to make it." % pdb_save_location)
+
         try:
             os.makedirs(pdb_save_location)
         except OSError:
             logging.critical("Can't make %s, make sure you have enough permissions." % pdb_save_location)
         else:
             logging.info("Directory exist, looking for old download files.")
+
             if(os.path.exists(pdb_save_location + pdb_name + ".pdb")):
                 logging.info("Old download found, it will be used.")
                 file_exists = True
+
     if(not file_exists):
+
         try:
             logging.info("Trying to download from URL.")
             urllib.request.urlretrieve(url, pdb_save_location + pdb_name + ".pdb")
@@ -94,6 +99,7 @@ def download_url(pdb_name, pdb_save_location, url, organism):
             invalid = False
 
     logging.info("Setting new data in object atributes.")
+
     return invalid, pdb_save_location + pdb_name + ".pdb"
 
 
@@ -109,11 +115,14 @@ def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download
     #Adding atoms to organism
     url_download = make_url(url_no_file, name)
     download_results = download_url("download_", "Pytom_Downloads", url_download, name)
+
     if(not download_results[0]):
         failed = False
         pdb_file = open(download_results[1])
         order_count = 0
+
         for lines in pdb_file:
+
             if(lines.startswith("ATOM")):
                 order_count += 1
                 newatom = Atom(
@@ -135,15 +144,18 @@ def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download
                     segmentid=lines[72:75].strip(' ') or None,
                     elementsymbol=lines[76:78].strip(' ') or None)
                 db.session.add(newatom)     #pylint: disable=no-member
+
         db.session.commit()                 #pylint: disable=no-member
 
         logging.info("Deleting Pytom Downloads folder...")
+
         try:
             shutil.rmtree("Pytom_Downloads")
         except FileNotFoundError:
             logging.error("Folder not found!")
         else:
             logging.info("Folder removed successfuly!")
+            
     else:
         logging.error("The download of the PDB file have failed! Can't continue without data.")
         logging.info("Reverting changes...")

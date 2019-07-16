@@ -1,4 +1,5 @@
-from . import app, general_functions, pytom_database, db
+from .. import general_functions
+from . import app, pytom_database, db
 from .pdb_dictionary_statements import PDB_Dictionary_Statements
 from flask import render_template, url_for, flash, redirect, request
 from .pytom_database import Organism, Atom, add_new_organism
@@ -132,8 +133,10 @@ def pytom():
                     logging.info("No custom sintax specified.")
                     logging.warning("If you are having problems, don't use custom sintax with default sintax. &select=10;TempFactor;mode:accurate is not equal to &select=10;TempFactor;accurate")
                     select_list = select
+
             select_list[0] = select_list[0].split(',')
             for i, selection in enumerate(select_list[0]):
+
                 try:
                     logging.info("Determining if %s is a string and can be transformed in to a float." % selection)
                     float(selection)
@@ -184,13 +187,17 @@ def pytom():
         pdb_dict.jsonify()
 
     else:
+
         if(failed):
             logging.error("Can't found organism.")
             flash("Can't found the Organism/s %s. Make sure you writed correctly and have Internet connection." % organism, category="danger")
         else:
             logging.info("No organism specified, loading Pytom page...")
+
         pdb_dict.json = render_template('pytom.html', title="Pytom Tool")
+
     logging.info("Returning results...")
+    
     return pdb_dict.json
 
 def start():

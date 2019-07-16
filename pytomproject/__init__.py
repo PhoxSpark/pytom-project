@@ -1,5 +1,6 @@
 import os, logging, sys
-from .flask_pack.general_functions import split
+from .general_functions import split
+from .flask_pack import run_flask
 from datetime import datetime
 
 #------------------------------------------------------------------------------
@@ -19,10 +20,19 @@ for args in argument:
 # Helper
 #------------------------------------------------------------------------------
 if('h' in flags):
+
     with open("README.md", 'r') as fin:
         print(fin.read())
         sys.exit()
 
+#------------------------------------------------------------------------------
+# Flask GUI initialize
+#------------------------------------------------------------------------------
+if('f' in flags):
+    try:
+        run_flask.start()
+    except Exception:
+        logging.error("Can't initialize Flask, no more information obtained.")
 
 #------------------------------------------------------------------------------
 # Initialize Logger
@@ -31,13 +41,15 @@ for handler in logging.root.handlers[:]:
     logging.root.removeHandler(handler)
 
 # Look for flags
-if('f' in flags or 'L' in flags):
+if('L' in flags):
+
     if(not os.path.exists("log/")):
         os.makedirs("log/")
+
     now = datetime.now()
     logging.basicConfig(filename='log/pytom-log-%s.log' % now.strftime("%d_%m_%Y-%H:%M:%S"), level=logging.DEBUG, format="%(asctime)s-[%(levelname)s]: %(message)s")
 
-if('l' in flags or 'L' in flags):
+if('l' in flags):
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(asctime)s-[%(levelname)s]: %(message)s")

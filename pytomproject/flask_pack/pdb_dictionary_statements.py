@@ -118,10 +118,12 @@ class PDB_Dictionary_Statements():
 
         for i, selection in enumerate(data):
 
-            if(not selection.isdigit()):
-                logging.warning("%s is a string! Can't apply a non accurate select." % selection)
-                go_to_accurate = True
-                break
+            if(type(selection) != int and type(selection) != float):
+
+                if(not selection.isdigit()):
+                    logging.warning("%s is a string! Can't apply a non accurate select." % selection)
+                    go_to_accurate = True
+                    break
 
             else:
                 data[i] = int(data[i])
@@ -158,14 +160,15 @@ class PDB_Dictionary_Statements():
             logging.info("Calling select in normal mode...")
             self.select_camps(data, camp, organisms)
     
-    def rollback(self):
+    def rollback(self, test=False):
         """
         Simple but useful function to come back to last dictionary.
         """
         temp_dict = self.pdb_dict_previous
         self.pdb_dict_previous = self.pdb_dict
         self.pdb_dict = temp_dict
-        self.jsonify()
+        if(not test):
+            self.jsonify()
 
     def jsonify(self):
         """

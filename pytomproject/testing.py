@@ -2,33 +2,76 @@ import sys
 sys.path.append("..")
 import unittest
 from unittest.mock import patch
-import pytomproject.functions_classes as functions_classes
-
-class Test_Class_PDB(unittest.TestCase):
-
-    def test_class_pdb_initialization(self):
-        """
-        Test if the class it's correctly initialized with his atributes
-        using te default inputs.
-        """
-        pdb = functions_classes.Object_PDB()
-        self.assertEqual(pdb.organism, "2ki5")
-        self.assertEqual(pdb.name, "downloaded_pdb.pdb")
-        self.assertEqual(pdb.url, "https://files.rcsb.org/download/2ki5.pdb")
-        self.assertEqual(pdb.path, "Downloads")
-        self.assertIsNotNone(pdb.pdb_dictionary)
-
-
+from .general_functions import split, question_y_n, save_obj, load_obj
+from .flask_pack.pdb_dictionary_statements import PDB_Dictionary_Statements
 
 class Test_User_Prompt(unittest.TestCase):
 
     @patch('builtins.input', return_value='yes')
     def test_question_y(self, input):
-        answer = functions_classes.question_y_n("Are you clever?")
+        answer = question_y_n("Are you clever?")
         self.assertEqual(answer, 'y')
     
     @patch('builtins.input', return_value='NO')
     def test_question_n(self, input):
-        answer = functions_classes.question_y_n("Are you dumb?")
+        answer = question_y_n("Are you dumb?")
         self.assertEqual(answer, 'n')
         
+
+class General_Functions_Test(unittest.TestCase):
+
+    def test_split(self):
+        word = "Test"
+        word = split(word)
+        self.assertEqual(len(word), 4)
+    
+    def test_save_load_obj(self):
+        object_to_save = {"Test": "This is a test"}
+        save_obj(object_to_save, "test")
+        object_to_load = load_obj("test")
+        self.assertEqual(object_to_save.items(), object_to_load.items())
+        self.assertEqual(object_to_save, object_to_load)
+
+def init_dict1():
+    dictionary = PDB_Dictionary_Statements()
+    dictionary.pdb_dict = {"2ki5": {"ATOM": {"1": {"x": 1.0, "organism": "2ki5"}, "2": {"x": 2.0, "organism": "2ki5"}, "3": {"x": 10.0, "organism": "2ki5"}}}}
+    return dictionary
+
+def init_dict2():
+    dictionary = PDB_Dictionary_Statements()
+    dictionary.pdb_dict = {"2ki5": {"ATOM": {"1": {"x": 1.0, "organism": "2ki5"}, "2": {"x": 2.0, "organism": "2ki5"}, "3": {"x": 10.0, "organism": "2ki5"}}}, "1ki5": {"ATOM": {"1": {"x": 1.0, "organism": "2ki5"}, "2": {"x": 2.0, "organism": "2ki5"}, "3": {"x": 10.0, "organism": "2ki5"}}}}
+    return dictionary
+
+class PDB_Dictionary_Statements_Test(unittest.TestCase):
+
+    def test_select_camps(self):
+        dictionary = init_dict1()
+        dictionary.select_camps([1.0], "x", ["2ki5"])
+        self.assertIsNotNone(dictionary.pdb_dict)
+    
+    def test_select_range(self):
+        dictionary = init_dict1()
+        dictionary.select_range([0.0, 20.0], "x", ["2ki5"])
+        self.assertIsNotNone(dictionary.pdb_dict)
+    
+    def test_select_no_accurate(self):
+        dictionary = init_dict1()
+        dictionary.select_no_accurate([1], "x", ["2ki5"])
+        self.assertIsNotNone(dictionary.pdb_dict)
+    
+    def test_rollback(self):
+        dictionary = init_dict2()
+        dictionary.select_camps([1.0], "x", ["2ki5"])
+        dictionary.rollback(True)
+        self.assertEqual(len(dictionary.pdb_dict), 2)
+
+class Pytom_Database_Test(unittest.TestCase):
+
+    def test_make_url(self):
+        pass
+    
+    def test_download_url(self):
+        pass
+    
+    def test_add_new_organism(self):
+        pass

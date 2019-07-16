@@ -14,8 +14,10 @@ def split(word):
     a list of single characters.
     """
     list_word = []
+    
     for character in word:
         list_word.append(character)
+
     return list_word
 
 #------------------------------------------------------------------------------
@@ -49,7 +51,7 @@ def save_obj(obj, name):
     This function transforms every object send it to him in to a .pkl
     file for future load an persistency of the data.
     """
-    if(not os.path.exists("data/" + name + ".pkl")):
+    if(not os.path.exists("data/")):
         os.makedirs("data/")
 
     with open("data/"+ name + ".pkl", "wb") as f:

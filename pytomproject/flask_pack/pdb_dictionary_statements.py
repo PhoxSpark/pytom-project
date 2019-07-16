@@ -1,9 +1,11 @@
 import logging
+from flask import jsonify
 
 class PDB_Dictionary_Statements():
     
     pdb_dict = {}
     pdb_dict_previous = {}
+    json = None
     
     def __init__(self):
         pass
@@ -157,6 +159,20 @@ class PDB_Dictionary_Statements():
             self.select_camps(data, camp, organisms)
     
     def rollback(self):
+        """
+        Simple but useful function to come back to last dictionary.
+        """
         temp_dict = self.pdb_dict_previous
         self.pdb_dict_previous = self.pdb_dict
         self.pdb_dict = temp_dict
+        self.jsonify()
+
+    def jsonify(self):
+        """
+        Transforms a dictionary in to a json file. The class atribute is
+        called json because it's expected to contain jsonified dictionaries
+        but it can contain templates and renders from flask.
+        """
+        logging.info("Applying changes to the json variable...")
+        logging.info("Clearing json variable...")
+        self.json = jsonify(self.pdb_dict)

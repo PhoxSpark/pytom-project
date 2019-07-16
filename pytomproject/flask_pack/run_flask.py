@@ -1,6 +1,6 @@
 from . import app, general_functions, pytom_database, db
 from .pdb_dictionary_statements import PDB_Dictionary_Statements
-from flask import render_template, url_for, flash, redirect, request, jsonify
+from flask import render_template, url_for, flash, redirect, request
 from .pytom_database import Organism, Atom, add_new_organism
 import logging
 
@@ -181,17 +181,7 @@ def pytom():
                 logging.info("Saving dictionary...")
                 general_functions.save_obj(pdb_dict, "dictionary")
 
-        #Jsonifing
-        logging.info("Applying changes to the json variable...")
-        logging.info("Clearing json variable...")
-        json = jsonify(pdb_dict.pdb_dict)
-
-    elif(rollback == 'y'):
-
-        #Jsonifing
-        logging.info("Applying changes to the json variable...")
-        logging.info("Clearing json variable...")
-        json = jsonify(pdb_dict.pdb_dict)
+        pdb_dict.jsonify()
 
     else:
         if(failed):
@@ -199,9 +189,9 @@ def pytom():
             flash("Can't found the Organism/s %s. Make sure you writed correctly and have Internet connection." % organism, category="danger")
         else:
             logging.info("No organism specified, loading Pytom page...")
-        json = render_template('pytom.html', title="Pytom Tool")
+        pdb_dict.json = render_template('pytom.html', title="Pytom Tool")
     logging.info("Returning results...")
-    return json
+    return pdb_dict.json
 
 def start():
     app.run(debug=True)

@@ -19,7 +19,10 @@ for args in argument:
 # Helper
 #------------------------------------------------------------------------------
 if('h' in flags):
-    print("This is the helper! Soon there will be a lot of information here.")
+    with open("README.md", 'r') as fin:
+        print(fin.read())
+        sys.exit()
+
 
 #------------------------------------------------------------------------------
 # Initialize Logger

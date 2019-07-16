@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 from .general_functions import split, question_y_n, save_obj, load_obj
 from .flask_pack.pdb_dictionary_statements import PDB_Dictionary_Statements
+from .flask_pack.pytom_database import make_url, download_url, add_new_organism
 
 class Test_User_Prompt(unittest.TestCase):
 
@@ -68,10 +69,8 @@ class PDB_Dictionary_Statements_Test(unittest.TestCase):
 class Pytom_Database_Test(unittest.TestCase):
 
     def test_make_url(self):
-        pass
+        self.assertEqual(make_url(), "https://files.rcsb.org/download/2ki5.pdb")
     
     def test_download_url(self):
-        pass
-    
-    def test_add_new_organism(self):
-        pass
+        test_download = download_url("name_", "Pytom_Downloads_Test", "https://files.rcsb.org/download/2ki5.pdb", "2ki5")
+        self.assertEqual(test_download, (False, "Pytom_Downloads_Test/name_2ki5.pdb"))

@@ -1,7 +1,7 @@
-from . import app, general_functions, db, pytom_searcher, pytom_database
+from . import app, general_functions, pytom_database, db
+from .pdb_dictionary_statements import PDB_Dictionary_Statements
 from flask import render_template, url_for, flash, redirect, request, jsonify
 from .pytom_database import Organism, Atom, add_new_organism
-from . import pytom_searcher, app, db
 import logging
 
 @app.route("/")
@@ -30,7 +30,7 @@ def pytom():
     and they can delete all the logs on the dictionary file, so also they can start from zero with a new 
     and empty dictionary.
 
-    All the results will be displayed on json (at the moment). This json will not be sorted and Pytom it's 
+    All the results will be displayed on json (at the moment). This json will not be sorted and Pytom is 
     not going to bring the tool to sort. I don't have any problem with the philosophy of sorting but the 
     whole pourpose of json is to make it easy to access data to another program or database. A program is 
     not going to care if the json is sorted so it's better to leave it like it is. Also, jsonify sorts a 
@@ -43,7 +43,7 @@ def pytom():
     Take in consideration that some statements have their own arguments, like select on that example.
     """
     logging.info("Initializing jsonify and loading data...")
-    pdb_dict = None
+    pdb_dict = PDB_Dictionary_Statements()
     pdb_dict = general_functions.load_obj("dictionary")
     failed = None
     select_list = [None, None, None]
@@ -55,6 +55,7 @@ def pytom():
     species = request.args.get("species", default = "Unnspecified", type = str)
     select = request.args.get("select", default = '*', type = str)
     save = request.args.get("save", default = 'y', type = str)
+    rollback = request.args.get("rollback", default = '*', type = str)
 
     #Empty DB
     #It will delete the saved database and create it again. After
@@ -74,7 +75,7 @@ def pytom():
     if(emptydict.lower() == 'y'):
         logging.info("Renewing dictionary...")
         pdb_dict = None
-        pdb_dict = {}
+        pdb_dict = PDB_Dictionary_Statements()
 
     #Checks if organism was specified, in that case it will check
     #it it exists on the DB and the Dictionary.
@@ -93,7 +94,7 @@ def pytom():
 
             if(not failed):
                 logging.info("Checking if %s exists in dictionary..." % group)
-                if(group not in pdb_dict):
+                if(group not in pdb_dict.pdb_dict):
                     logging.info("%s not found! It will be added in the dictionary for future use and manipulation..." % group)
                     atom_dict = {}
                     for atom in Atom.query.filter_by(organism = group):                             #pylint: disable=no-member
@@ -102,14 +103,14 @@ def pytom():
                         if 'id' in atom: del atom['id']
                         if("ATOM" not in atom_dict):
                             atom_dict[atom["order"]] = atom
-                    pdb_dict[group] = {"ATOM": atom_dict}
-
+                    pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
+    
+    elif(rollback == 'y'):
+        logging.info("Trying to rollback to last dictionary...")
+        pdb_dict.rollback()
+    
     #All the statements goes through this IF
     if(not failed and organism != '*'):
-        if(save.lower() == 'y'):
-            logging.info("Saving dictionary...")
-            general_functions.save_obj(pdb_dict, "dictionary")
-
         #SELECT
         #This statement will take the camps you specified and the values and will delete
         #every single row that don't pass the filter.
@@ -144,15 +145,13 @@ def pytom():
 
             logging.info("Arguments added to the list: %s, this have 3 data requirements so every other data will be ignored. Proceeding to call the function to apply to PDB object." % select_list)
 
-
             #NORMAL MODE
             #Normal mode will take an integer and compare it with the specified camp without
             #taking in consideration the decimals. It can take strings or characters but in
             #that case it automatically redirects to the accurate mode.
             if(select_list[2] == "normal"):
                 logging.info("Normal mode recogniced, proceeding...")
-                pdb_dict = general_functions.select_no_accurate(select_list[0], select_list[1], pdb_dict, organism)
-
+                pdb_dict.select_no_accurate(select_list[0], select_list[1], organism)
 
             #RANGE MODE
             #Takes 2 values integer or float and select all the coincidences between those
@@ -161,40 +160,38 @@ def pytom():
             #operation and drops a logging error saying that normal or accurate mode can do 
             #that (because it has no sense to make a range from 1.5 to 1.5).
             elif(select_list[2] == "range"):
-                logging.info("Range mode recogniced, looking for two values...")
-
-                if(len(select_list[0]) == 2):
-                    logging.info("Found two values, are the same?")
-
-                    if(select_list[0][0] != select_list[0][1]):
-                        if(type(select_list[0][0] != str or type(select_list[0][1] != str))):
-                            logging.info("The values %s aren't equal, sorting..." % select_list[0])
-                            select_list[0] = sorted(select_list[0])
-                            logging.info("The values are now sorted, calling function to apply range on the PDB...")
-                            pdb_dict = general_functions.select_range(select_list[0][0], select_list[0][1], select_list[1], pdb_dict, organism)
-                            logging.info("Range applyied.")
-                        else:
-                            logging.error("Can't compare a range of strings.")
-                    else:
-                        logging.error("The values are equal, try with normal or accurate mode.")
-                else:
-                    logging.error("Wrong number of values, expected 2.")
-
+                logging.info("Range mode recogniced, proceeding...")
+                pdb_dict.select_range(select_list[0], select_list[1], organism)
 
             #ACCURATE MODE
             #Takes an integer or a float and gets the exact coincidence, that simple. It can
             #take list of numbers and organisms like normal mode.
             elif(select_list[2] == "accurate"):
                 logging.info("Accurate mode recogniced, proceeding...")
-                pdb_dict = general_functions.select_camps(select_list[0], select_list[1], pdb_dict, organism)
+                pdb_dict.select_camps(select_list[0], select_list[1], organism)
 
+            #NOT RECOGNICED MODE
             else:
                 logging.error("The specified mode (%s) is not recogniced, select will not proceed." % select_list[2])
+
+            #SAVE
+            #Default y, it allows the user to decide if he want's to save the on going
+            #changes or not.
+            if(save.lower() == 'y'):
+                logging.info("Saving dictionary...")
+                general_functions.save_obj(pdb_dict, "dictionary")
 
         #Jsonifing
         logging.info("Applying changes to the json variable...")
         logging.info("Clearing json variable...")
-        json = jsonify(pdb_dict)
+        json = jsonify(pdb_dict.pdb_dict)
+
+    elif(rollback == 'y'):
+
+        #Jsonifing
+        logging.info("Applying changes to the json variable...")
+        logging.info("Clearing json variable...")
+        json = jsonify(pdb_dict.pdb_dict)
 
     else:
         if(failed):

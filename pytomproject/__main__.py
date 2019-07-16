@@ -5,13 +5,7 @@ import pytomproject.flask_pack.general_functions as general_functions
 
 from pytomproject.flask_pack import db
 
-argument = []
-for argv in sys.argv:
-    argument.append(argv)
-
 def main():
-    general_functions.initialize_logger(argument)
-
     try:
         run_flask.start()
     except Exception:

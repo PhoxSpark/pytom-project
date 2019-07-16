@@ -1,5 +1,5 @@
 import logging, os, urllib, sys, shutil
-from . import db, pytom_searcher 
+from . import db
 
 """
 Flask Database Implementation tests.

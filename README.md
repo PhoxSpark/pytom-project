@@ -59,6 +59,9 @@ the next is ***not allowed***, if you specify the type you can't use non specifi
 
 The select statement has 3 modes: Normal (it will ignore decimals), Accurate (it looks for exact value) and range (it takes two values and select everything between). Normally, you can add more than one values on a camp and even more than one organism, but at this moment it only accepts one camp at the same time.
 
+### Rollback statement
+This statement allows the user to go back on his changes. It's very useful in case the user query don't show any results and want to go to before results.
+
 ## To-do list
 Pytom can do some things, still is a bit empty. There are some to do things that I wan't to implement (the list can be expanded):
 

@@ -15,7 +15,7 @@ def home():
     return render_template('home.html', title="Home")
 
 @app.route("/pytom")
-def pytom(flaskon=True, emptydb='*', emptydict='*', organism='*', species='*', select='*', save='*', rollback='*'):
+def pytom():
     """
     Main tool of Pytom
 
@@ -50,15 +50,14 @@ def pytom(flaskon=True, emptydb='*', emptydict='*', organism='*', species='*', s
     failed = None
     select_list = [None, None, None]
 
-    if(flaskon):
-        logging.info("Reading specified arguments...")
-        emptydb = request.args.get("newdb", default = '*', type = str)
-        emptydict = request.args.get("newdict", default = '*', type = str)
-        organism = request.args.get("organism", default = '*', type = str)
-        species = request.args.get("species", default = "Unnspecified", type = str)
-        select = request.args.get("select", default = '*', type = str)
-        save = request.args.get("save", default = 'y', type = str)
-        rollback = request.args.get("rollback", default = '*', type = str)
+    logging.info("Reading specified arguments...")
+    emptydb = request.args.get("newdb", default = '*', type = str)
+    emptydict = request.args.get("newdict", default = '*', type = str)
+    organism = request.args.get("organism", default = '*', type = str)
+    species = request.args.get("species", default = "Unnspecified", type = str)
+    select = request.args.get("select", default = '*', type = str)
+    save = request.args.get("save", default = 'y', type = str)
+    rollback = request.args.get("rollback", default = '*', type = str)
 
     #Empty DB
     #It will delete the saved database and create it again. After

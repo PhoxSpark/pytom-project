@@ -37,14 +37,14 @@ This will return the JSON file of the PDB 2KI5. Pretty simple to use, every prog
 ### Species
 A working on function, actually you can add the specie of the organism that you are requesting. In the future this is intended to get all the organisms of the specified specimen.
 
-### New statement
+### New
 If you want to clear your database or the working dictionary, you can do it with the New statement. It's simple, if you write ***?newdb=y***, the whole database will be droped. If you write ***?newdict=y*** the whole working dictionary will be deleted.
 This don't limits the program usage, if you delete any of this data, Pytom will create it all the next time you make a query.
 
-### Save statement
+### Save
 Even if you don't use it, it's allways in use because the default output of this statement is "y", in other words, every time you make a query, a ***&save=y*** is "added" to your consult. If you ***don't want to modify the working dictionary*** you can add &save=n to your query. With that done, you can observe the changes that will apply to the dictionary without modifying it.
 
-### Select statement
+### Select
 The select statement allows the user to apply filters. It's used on a concrete way but it's relatively simple and flexible. Here is the syntax:
 
 ***localhost:5000/pytom?organism=2ki5&select=CA;name;accurate***
@@ -59,7 +59,7 @@ the next is ***not allowed***, if you specify the type you can't use non specifi
 
 The select statement has 3 modes: Normal (it will ignore decimals), Accurate (it looks for exact value) and range (it takes two values and select everything between). Normally, you can add more than one values on a camp and even more than one organism, but at this moment it only accepts one camp at the same time.
 
-### Rollback statement
+### Rollback
 This statement allows the user to go back on his changes. It's very useful in case the user query don't show any results and want to go to before results.
 
 ## To-do list

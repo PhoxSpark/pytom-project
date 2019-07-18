@@ -66,10 +66,10 @@ def load_obj(name):
     same type.
     """
     object_load = {}
-
+    
+    logging.info("Looking if the file exists...")
     if(os.path.exists("data/" + name + ".pkl")):
-
+        logging.info("File exists, it will be loaded.")
         with open("data/" + name + ".pkl", "rb") as f:
             object_load = pickle.load(f)
-            
-    return object_load
+            return object_load

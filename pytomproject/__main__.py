@@ -6,7 +6,6 @@ from pytomproject.flask_pack import db
 
 def main():
     logging.info("Pytom initialized...")
-    run_flask.start()
     
 
 if __name__ == '__main__':

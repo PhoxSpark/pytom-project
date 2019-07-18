@@ -3,7 +3,7 @@ from . import app, pytom_database, db
 from .pdb_dictionary_statements import PDB_Dictionary_Statements
 from flask import render_template, url_for, flash, redirect, request
 from .pytom_database import Organism, Atom, add_new_organism
-import logging
+import logging, os
 
 @app.route("/")
 @app.route("/home")
@@ -45,7 +45,8 @@ def pytom():
     """
     logging.info("Initializing jsonify and loading data...")
     pdb_dict = PDB_Dictionary_Statements()
-    pdb_dict = general_functions.load_obj("dictionary")
+    if(os.path.exists("data/" + "dictionary" + ".pkl")):
+        pdb_dict = general_functions.load_obj("dictionary")
     failed = None
     select_list = [None, None, None]
 

@@ -6,9 +6,9 @@ class PDB_Dictionary_Statements():
     pdb_dict = {}
     pdb_dict_previous = {}
     json = None
-    
+
     def __init__(self):
-        pass
+        logging.info("PDB_Dictionary initialized.")
 
     #------------------------------------------------------------------------------
     # Select camps accurately from dictionary

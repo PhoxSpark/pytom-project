@@ -26,15 +26,6 @@ if('h' in flags):
         sys.exit()
 
 #------------------------------------------------------------------------------
-# Flask GUI initialize
-#------------------------------------------------------------------------------
-if('f' in flags):
-    try:
-        run_flask.start()
-    except Exception:
-        logging.error("Can't initialize Flask, no more information obtained.")
-
-#------------------------------------------------------------------------------
 # Initialize Logger
 #------------------------------------------------------------------------------
 for handler in logging.root.handlers[:]:
@@ -64,3 +55,9 @@ if("file-logging" in argument or "console-logging" in argument):
     logging.error("Test error message: This messages will inform about problems while executing the program.")
     logging.critical("Test critical message: This messages will inform about major problems in the program that may interrumpt it.")
     logging.debug("Test debug message: This messages are for the programmers, it will display some useful information.")
+
+#------------------------------------------------------------------------------
+# Flask GUI initialize
+#------------------------------------------------------------------------------
+if('f' in flags):
+    run_flask.start()

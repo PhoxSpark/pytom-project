@@ -104,7 +104,20 @@ def download_url(pdb_name, pdb_save_location, url, organism):
 
 
 def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download/"):
+    """
+    This function will add a new organism to the database. It takes
+    the organism name and specie and the download link. First it will
+    create the organism on the database and download the PDB file.
+    After that, it will start reading the PDB file and adding the data
+    to the table Atom (which is related with the table Organism so
+    every query on organism atoms will return the table atom).
 
+    Every line starting with atom will add the information from the
+    PDB and on EOF it will commit all the changes to the database.
+    Once it's finished, the download folder will be deleted (if it can
+    be deleted) and it will return if the creation of the database and
+    the download of the file failed or not.
+    """
     failed = True
 
     #Adding organism
@@ -143,9 +156,9 @@ def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download
                     tempfactor=lines[60:65].strip(' ') or None,
                     segmentid=lines[72:75].strip(' ') or None,
                     elementsymbol=lines[76:78].strip(' ') or None)
-                db.session.add(newatom)     #pylint: disable=no-member
+                db.session.add(newatom)                                                                                                     #pylint: disable=no-member
 
-        db.session.commit()                 #pylint: disable=no-member
+        db.session.commit()                                                                                                                 #pylint: disable=no-member
 
         logging.info("Deleting Pytom Downloads folder...")
 
@@ -160,6 +173,6 @@ def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download
         logging.error("The download of the PDB file have failed! Can't continue without data.")
         logging.info("Reverting changes...")
         Organism.query.filter_by(name = name).delete()
-        db.session.commit()                 #pylint: disable=no-member
+        db.session.commit()                                                                                                                 #pylint: disable=no-member
 
     return failed

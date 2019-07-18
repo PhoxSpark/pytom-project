@@ -24,6 +24,7 @@ class PDB_Dictionary_Statements():
         new_pdb_dict = {}
 
         for organism in organisms:
+            logging.debug("Looking for value/s %s on camp %s inside organism %s..." % (data, camp, organism))
 
             if(not organism in new_pdb_dict):
                 new_pdb_dict[organism] = {}
@@ -39,10 +40,14 @@ class PDB_Dictionary_Statements():
                         new_pdb_dict[organism]["ATOM"][items[0]] = items[1]
                         coincidences += 1
 
-        logging.info("%i coincidences found!" % coincidences)
-        logging.info("Applying changes...")
-        self.pdb_dict_previous = self.pdb_dict
-        self.pdb_dict = new_pdb_dict
+        if(coincidences > 0):
+            logging.info("%i coincidences found!" % coincidences)
+            logging.info("Applying changes...")
+            self.pdb_dict_previous = self.pdb_dict
+            self.pdb_dict = new_pdb_dict
+        else:
+            logging.info("No coincidences, changes will not be applyied.")
+        
 
     #------------------------------------------------------------------------------
     # Select range from dictionary
@@ -84,7 +89,7 @@ class PDB_Dictionary_Statements():
             new_pdb_dict = {}
 
             for organism in organisms:
-
+                logging.debug("Looking for value/s %s on camp %s inside organism %s..." % (data, camp, organism))
                 if(not organism in new_pdb_dict):
                     new_pdb_dict[organism] = {}
 
@@ -93,14 +98,20 @@ class PDB_Dictionary_Statements():
                     if(not "ATOM" in new_pdb_dict[organism]):
                         new_pdb_dict[organism]["ATOM"] = {}
 
-                    if(organism == items[1]["organism"] and items[1][camp] < float(datamax) and items[1][camp] > float(datamin)):
+                    if(organism == items[1]["organism"] and items[1][camp] <= float(datamax) and items[1][camp] >= float(datamin)):
                         new_pdb_dict[organism]["ATOM"][items[0]] = items[1]
                         coincidences += 1
+                        logging.debug("Coincidence found!")
+                    else:
+                        logging.debug("%s is not between %s and %s." % (items[1]["organism"] and items[1][camp], float(datamin), float(datamax)))
 
-            logging.info("%i coincidences found!" % coincidences)
-            logging.info("Applying changes...")
-            self.pdb_dict_previous = self.pdb_dict
-            self.pdb_dict = new_pdb_dict
+            if(coincidences > 0):
+                logging.info("%i coincidences found!" % coincidences)
+                logging.info("Applying changes...")
+                self.pdb_dict_previous = self.pdb_dict
+                self.pdb_dict = new_pdb_dict
+            else:
+                logging.info("No coincidences, changes will not be applyied.")
 
     #------------------------------------------------------------------------------
     # Select camps no accurate from dictionary
@@ -151,11 +162,13 @@ class PDB_Dictionary_Statements():
                                 new_pdb_dict[organism]["ATOM"][items[0]] = items[1]
                                 coincidences += 1
 
-            logging.info("%i coincidences found!" % coincidences)
-            logging.info("Applying changes...")
-            self.pdb_dict_previous = self.pdb_dict
-            self.pdb_dict = new_pdb_dict
-
+            if(coincidences > 0):
+                logging.info("%i coincidences found!" % coincidences)
+                logging.info("Applying changes...")
+                self.pdb_dict_previous = self.pdb_dict
+                self.pdb_dict = new_pdb_dict
+            else:
+                logging.info("No coincidences, changes will not be applyied.")
         else:
             logging.info("Calling select in normal mode...")
             self.select_camps(data, camp, organisms)

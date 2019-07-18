@@ -17,15 +17,6 @@ for args in argument:
         flags = split(args)
 
 #------------------------------------------------------------------------------
-# Helper
-#------------------------------------------------------------------------------
-if('h' in flags):
-
-    with open("README.md", 'r') as fin:
-        print(fin.read())
-        sys.exit()
-
-#------------------------------------------------------------------------------
 # Initialize Logger
 #------------------------------------------------------------------------------
 for handler in logging.root.handlers[:]:
@@ -57,7 +48,15 @@ if("file-logging" in argument or "console-logging" in argument):
     logging.debug("Test debug message: This messages are for the programmers, it will display some useful information.")
 
 #------------------------------------------------------------------------------
-# Flask GUI initialize
+# Helper
 #------------------------------------------------------------------------------
+if('h' in flags):
+
+    with open("README.md", 'r') as fin:
+        print(fin.read())
+        sys.exit()
+
+
 if('f' in flags):
+    logging.info("Flask will be initialized...")
     run_flask.start()

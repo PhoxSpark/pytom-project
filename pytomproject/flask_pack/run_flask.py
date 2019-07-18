@@ -15,7 +15,7 @@ def home():
     return render_template('home.html', title="Home")
 
 @app.route("/pytom")
-def pytom():
+def pytom(flaskon=True, emptydb='*', emptydict='*', organism='*', species='*', select='*', save='*', rollback='*'):
     """
     Main tool of Pytom
 
@@ -50,14 +50,15 @@ def pytom():
     failed = None
     select_list = [None, None, None]
 
-    logging.info("Reading specified arguments...")
-    emptydb = request.args.get("newdb", default = '*', type = str)
-    emptydict = request.args.get("newdict", default = '*', type = str)
-    organism = request.args.get("organism", default = '*', type = str)
-    species = request.args.get("species", default = "Unnspecified", type = str)
-    select = request.args.get("select", default = '*', type = str)
-    save = request.args.get("save", default = 'y', type = str)
-    rollback = request.args.get("rollback", default = '*', type = str)
+    if(flaskon):
+        logging.info("Reading specified arguments...")
+        emptydb = request.args.get("newdb", default = '*', type = str)
+        emptydict = request.args.get("newdict", default = '*', type = str)
+        organism = request.args.get("organism", default = '*', type = str)
+        species = request.args.get("species", default = "Unnspecified", type = str)
+        select = request.args.get("select", default = '*', type = str)
+        save = request.args.get("save", default = 'y', type = str)
+        rollback = request.args.get("rollback", default = '*', type = str)
 
     #Empty DB
     #It will delete the saved database and create it again. After
@@ -107,7 +108,7 @@ def pytom():
                             atom_dict[atom["order"]] = atom
                     pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
     
-    elif(rollback == 'y'):
+    if(rollback == 'y'):
         logging.info("Trying to rollback to last dictionary...")
         pdb_dict.rollback()
     

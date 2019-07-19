@@ -55,8 +55,3 @@ if('h' in flags):
     with open("README.md", 'r') as fin:
         print(fin.read())
         sys.exit()
-
-
-if('f' in flags):
-    logging.info("Flask will be initialized...")
-    run_flask.start()

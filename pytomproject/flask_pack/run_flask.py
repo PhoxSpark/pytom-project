@@ -27,7 +27,7 @@ def pytom():
     for atoms (perhaps something more in the future) but if the user want a more concrete search, he can 
     achieve that using arguments on the same URL. Also, with the use of arguments they can decide if the 
     dictionary will save after the consult (for apply more arguments after or take a look without change 
-    anything), they can erase the full database (for make space in to the HDD or to start fresh and clean) 
+    anything), they can erase the full database (for make space in to the HDD or to start fresh and clean)
     and they can delete all the logs on the dictionary file, so also they can start from zero with a new 
     and empty dictionary.
 

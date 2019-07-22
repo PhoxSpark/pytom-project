@@ -8,7 +8,7 @@ class PDB_Dictionary_Statements():
     pdb_dict_previous = {}
     json = None
 
-    def __init__(self, organism):
+    def __init__(self):
         logging.info("PDB_Dictionary initialized.")
 
     #------------------------------------------------------------------------------

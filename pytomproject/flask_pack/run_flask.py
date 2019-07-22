@@ -24,6 +24,14 @@ def initial_checks():
         pdb_dict = general_functions.load_obj("dictionary")
     return pdb_dict
 
+def save():
+    #SAVE
+    #Default y, it allows the user to decide if he want's to save the on going
+    #changes or not.
+    pdb_dict = initial_checks()
+    logging.info("Saving dictionary...")
+    general_functions.save_obj(pdb_dict, "dictionary")
+
 @app.route("/static/<path:path>")
 def send_static(path):
     """
@@ -40,11 +48,25 @@ def delete():
     pdb_dict = initial_checks()
     logging.info("Reading specified arguments...")
     delete = request.args.get("", default = "all", type = str)
-    if(delete == "database" or delete == "all"):
-        pass
-    
-    if(delete == "dictionary" or delete == "all"):
-        pass
+    if(delete == "all" or delete == "database" or delete == "dictionary"):
+        if(delete == "database" or delete == "all"):
+            logging.info("Renewing database...")
+            db.drop_all()
+            db.create_all()
+            logging.info("Database was renewed.")
+        
+        if(delete == "dictionary" or delete == "all"):
+            logging.info("Renewing dictionary...")
+            pdb_dict = None
+            pdb_dict = PDB_Dictionary_Statements() 
+            os.remove("Data/dictionary.pkl")
+        save()
+        return(render_template('assertive_response.html', title="Success!"))
+
+    else:
+        return(render_template('negative_response.html', title="Error!"))
+
+
 
 @app.route("/organism")
 def organism():
@@ -69,7 +91,7 @@ def organism():
 
             if(not exists):
                 logging.info("Organism %s not found! It will be created." % group)
-                pdb_dict.failed = add_new_organism(group, species)
+                pdb_dict.failed = add_new_organism(group, "Unspecified")
 
             if(not pdb_dict.failed):
                 logging.info("Checking if %s exists in dictionary..." % group)
@@ -86,7 +108,7 @@ def organism():
                             atom_dict[atom["order"]] = atom
 
                     pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
-
+        save()
         return(render_template('assertive_response.html', title="Success!"))
 
 
@@ -100,6 +122,7 @@ def select():
     pdb_dict = initial_checks()
     logging.info("Reading specified arguments...")
     select = request.args.get("", default = "all", type = str)
+    save()
 
 @app.route("/rollback")
 def rollback():
@@ -107,7 +130,7 @@ def rollback():
     Rollback will go back to the before dictionary.
     """
     pdb_dict = initial_checks()
-    pass
+    save()
 
 @app.route("/return")
 def return_data():
@@ -115,15 +138,12 @@ def return_data():
     This URL will return the results of all the querys.
     """
     pdb_dict = initial_checks()
-    logging.info("Reading specified arguments...")
-    return_data = request.args.get("", default = '*', type = str)
-    if(pdb_dict.failed):
-        logging.error("Can't found organism.")
-        flash("Can't found the Organism/s %s. Make sure you writed correctly and have Internet connection." % organism, category="danger")
+    pdb_dict.jsonify()
+    logging.info("Returning results...")
+    if(pdb_dict.json != None):
+        return pdb_dict.json
     else:
-        logging.info("No organism specified, loading Pytom page...")
-
-    pdb_dict.json = render_template('home.html', title="pytom")
+        return (render_template('negative_response.html', title="Error!"))
 
 
 @app.route("/")
@@ -162,28 +182,6 @@ def pytom():
     select = request.args.get("select", default = '*', type = str)
     save = request.args.get("save", default = 'y', type = str)
     rollback = request.args.get("rollback", default = '*', type = str)
-
-    #Empty DB
-    #It will delete the saved database and create it again. After
-    #doing this, the query will last a little longer than usual
-    #because pytom has to download the PDB again.
-    logging.info("Checking if it's required a database renovation...")
-    if(emptydb.lower() == 'y'):
-        logging.info("Renewing database...")
-        db.drop_all()
-        db.create_all()
-        logging.info("Database was renewed.")
-
-    #Empty Dictionary
-    #This will reset the pdb_dictionary. With that it can delete
-    #all the changes maded by the user.
-    logging.info("Checking if it's required a list renovation...")
-    if(emptydict.lower() == 'y'):
-        logging.info("Renewing dictionary...")
-        pdb_dict = None
-        pdb_dict = PDB_Dictionary_Statements()
-
-    
     
     if(rollback == 'y'):
         logging.info("Trying to rollback to last dictionary...")
@@ -256,21 +254,8 @@ def pytom():
             else:
                 logging.error("The specified mode (%s) is not recogniced, select will not proceed." % select_list[2])
 
-            #SAVE
-            #Default y, it allows the user to decide if he want's to save the on going
-            #changes or not.
-            if(save.lower() == 'y'):
-                logging.info("Saving dictionary...")
-                general_functions.save_obj(pdb_dict, "dictionary")
 
-        pdb_dict.jsonify()
-
-    else:
-
-
-    logging.info("Returning results...")
     
-    return pdb_dict.json
 
 def start():
     app.run(debug=True)

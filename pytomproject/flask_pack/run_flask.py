@@ -1,20 +1,132 @@
 from .. import general_functions
 from . import app, pytom_database, db
 from .pdb_dictionary_statements import PDB_Dictionary_Statements
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, send_from_directory
 from .pytom_database import Organism, Atom, add_new_organism
+from flask_swagger_ui import get_swaggerui_blueprint
 import logging, os
 
-@app.route("/")
-@app.route("/home")
-def home():
-    """
-    Load the home page when request from / or /home.
-    """
-    logging.info("Loading home page...")
-    return render_template('home.html', title="Home")
+SWAGGER_URL = "/swagger"
+API_URL = "/static/swagger.json"
+swaggerio_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        "app_name": "Pytom Project"
+    }
+)
+app.register_blueprint(swaggerio_blueprint, url_prefix=SWAGGER_URL)
 
-@app.route("/pytom")
+def initial_checks():
+    logging.info("Initializing jsonify and loading data...")
+    pdb_dict = PDB_Dictionary_Statements()
+    if(os.path.exists("data/" + "dictionary" + ".pkl")):
+        pdb_dict = general_functions.load_obj("dictionary")
+    return pdb_dict
+
+@app.route("/static/<path:path>")
+def send_static(path):
+    """
+    """
+    return send_from_directory('static', path)
+
+@app.route("/delete")
+def delete():
+    """
+    Reset the dictionary or database. It will reset all
+    if there is no parameter.
+    """
+    failed = None
+    pdb_dict = initial_checks()
+    logging.info("Reading specified arguments...")
+    delete = request.args.get("", default = "all", type = str)
+    if(delete == "database" or delete == "all"):
+        pass
+    
+    if(delete == "dictionary" or delete == "all"):
+        pass
+
+@app.route("/organism")
+def organism():
+    """
+    Select one or more organisms from a PDB. It requires
+    parameters, it don't accept empty.
+    """
+    pdb_dict = initial_checks()
+    logging.info("Reading specified arguments...")
+    organism = request.args.get("", default = "*", type = str)
+    if(organism == "*"):
+        logging.error("Organism can't be void!")
+        return(render_template('negative_response.html', title="Error!"))
+
+    else:
+        logging.info("Organism specified, splitting it...")
+        organism = organism.split(',')
+
+        for group in organism:
+            logging.info("Checking if organism %s exist..." % group)
+            exists = db.session.query(db.exists().where(Organism.name == group)).scalar()           #pylint: disable=no-member
+
+            if(not exists):
+                logging.info("Organism %s not found! It will be created." % group)
+                pdb_dict.failed = add_new_organism(group, species)
+
+            if(not pdb_dict.failed):
+                logging.info("Checking if %s exists in dictionary..." % group)
+
+                if(group not in pdb_dict.pdb_dict):
+                    logging.info("%s not found! It will be added in the dictionary for future use and manipulation..." % group)
+                    atom_dict = {}
+
+                    for atom in Atom.query.filter_by(organism = group):                             #pylint: disable=no-member
+                        atom = atom.__dict__
+                        if '_sa_instance_state' in atom: del atom['_sa_instance_state']
+                        if 'id' in atom: del atom['id']
+                        if("ATOM" not in atom_dict):
+                            atom_dict[atom["order"]] = atom
+
+                    pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
+
+        return(render_template('assertive_response.html', title="Success!"))
+
+
+@app.route("/select")
+def select():
+    """
+    Select atoms based on an specified camp or value with
+    some different modes.
+    """
+    select_list = [None, None, None]
+    pdb_dict = initial_checks()
+    logging.info("Reading specified arguments...")
+    select = request.args.get("", default = "all", type = str)
+
+@app.route("/rollback")
+def rollback():
+    """
+    Rollback will go back to the before dictionary.
+    """
+    pdb_dict = initial_checks()
+    pass
+
+@app.route("/return")
+def return_data():
+    """
+    This URL will return the results of all the querys.
+    """
+    pdb_dict = initial_checks()
+    logging.info("Reading specified arguments...")
+    return_data = request.args.get("", default = '*', type = str)
+    if(pdb_dict.failed):
+        logging.error("Can't found organism.")
+        flash("Can't found the Organism/s %s. Make sure you writed correctly and have Internet connection." % organism, category="danger")
+    else:
+        logging.info("No organism specified, loading Pytom page...")
+
+    pdb_dict.json = render_template('home.html', title="pytom")
+
+
+@app.route("/")
 def pytom():
     """
     Main tool of Pytom
@@ -43,17 +155,9 @@ def pytom():
     http://localhost:5000/pytom/?organism=2ki5&select=name:CA,N&newdict=y
     Take in consideration that some statements have their own arguments, like select on that example.
     """
-    logging.info("Initializing jsonify and loading data...")
-    pdb_dict = PDB_Dictionary_Statements()
-    if(os.path.exists("data/" + "dictionary" + ".pkl")):
-        pdb_dict = general_functions.load_obj("dictionary")
-    failed = None
-    select_list = [None, None, None]
 
-    logging.info("Reading specified arguments...")
     emptydb = request.args.get("newdb", default = '*', type = str)
     emptydict = request.args.get("newdict", default = '*', type = str)
-    organism = request.args.get("organism", default = '*', type = str)
     species = request.args.get("species", default = "Unnspecified", type = str)
     select = request.args.get("select", default = '*', type = str)
     save = request.args.get("save", default = 'y', type = str)
@@ -79,33 +183,7 @@ def pytom():
         pdb_dict = None
         pdb_dict = PDB_Dictionary_Statements()
 
-    #Checks if organism was specified, in that case it will check
-    #it it exists on the DB and the Dictionary.
-    logging.info("Checking if organism was specified...")
-    if(organism != '*'):
-        logging.info("Organism specified, splitting it...")
-        organism = organism.split(',')
-
-        for group in organism:
-            logging.info("Checking if organism %s exist..." % group)
-            exists = db.session.query(db.exists().where(Organism.name == group)).scalar()           #pylint: disable=no-member
-
-            if(not exists):
-                logging.info("Organism %s not found! It will be created." % group)
-                failed = add_new_organism(group, species)
-
-            if(not failed):
-                logging.info("Checking if %s exists in dictionary..." % group)
-                if(group not in pdb_dict.pdb_dict):
-                    logging.info("%s not found! It will be added in the dictionary for future use and manipulation..." % group)
-                    atom_dict = {}
-                    for atom in Atom.query.filter_by(organism = group):                             #pylint: disable=no-member
-                        atom = atom.__dict__
-                        if '_sa_instance_state' in atom: del atom['_sa_instance_state']
-                        if 'id' in atom: del atom['id']
-                        if("ATOM" not in atom_dict):
-                            atom_dict[atom["order"]] = atom
-                    pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
+    
     
     if(rollback == 'y'):
         logging.info("Trying to rollback to last dictionary...")
@@ -189,13 +267,6 @@ def pytom():
 
     else:
 
-        if(failed):
-            logging.error("Can't found organism.")
-            flash("Can't found the Organism/s %s. Make sure you writed correctly and have Internet connection." % organism, category="danger")
-        else:
-            logging.info("No organism specified, loading Pytom page...")
-
-        pdb_dict.json = render_template('pytom.html', title="Pytom Tool")
 
     logging.info("Returning results...")
     

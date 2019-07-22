@@ -3,11 +3,12 @@ from flask import jsonify
 
 class PDB_Dictionary_Statements():
     
+    failed = False
     pdb_dict = {}
     pdb_dict_previous = {}
     json = None
 
-    def __init__(self):
+    def __init__(self, organism):
         logging.info("PDB_Dictionary initialized.")
 
     #------------------------------------------------------------------------------
@@ -59,7 +60,7 @@ class PDB_Dictionary_Statements():
         obvious reasons.
         """
         logging.info("Looking for two values...")
-        failed = True
+        self.failed = True
 
         if(len(data) == 2):
             logging.info("Found two values, are the same?")
@@ -72,7 +73,7 @@ class PDB_Dictionary_Statements():
                     logging.info("The values are now sorted, calling function to apply range on the PDB...")
                     datamin, datamax = (data[0], data[1])
                     logging.info("Range applyied.")
-                    failed = False
+                    self.failed = False
 
                 else:
                     logging.error("Can't compare a range of strings.")
@@ -83,7 +84,7 @@ class PDB_Dictionary_Statements():
         else:
             logging.error("Wrong number of values, expected 2.")
 
-        if(not failed):
+        if(not self.failed):
             logging.info("Selecting specified rang from atom list and aplying it...")
             coincidences = 0
             new_pdb_dict = {}

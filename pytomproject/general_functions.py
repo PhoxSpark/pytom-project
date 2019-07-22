@@ -52,10 +52,13 @@ def save_obj(obj, name):
     file for future load an persistency of the data.
     """
     if(not os.path.exists("data/")):
+        logging.info("Path don't exists, creating it.")
         os.makedirs("data/")
 
     with open("data/"+ name + ".pkl", "wb") as f:
+        logging.info("Saving...")
         pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+        logging.info("File saved.")
 
 #------------------------------------------------------------------------------
 # Load object from Pickle

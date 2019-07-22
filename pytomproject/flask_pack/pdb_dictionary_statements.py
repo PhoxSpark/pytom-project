@@ -7,6 +7,7 @@ class PDB_Dictionary_Statements():
     pdb_dict = {}
     pdb_dict_previous = {}
     json = None
+    organism_list = []
 
     def __init__(self):
         logging.info("PDB_Dictionary initialized.")
@@ -14,7 +15,7 @@ class PDB_Dictionary_Statements():
     #------------------------------------------------------------------------------
     # Select camps accurately from dictionary
     #------------------------------------------------------------------------------
-    def select_camps(self, data, camp, organisms):
+    def select_camps(self, data, camp):
         """
         Select one or more data from one camp on one or more organism inside 
         a PDB dictionary. It will create a new dictionary with the requested 
@@ -23,8 +24,8 @@ class PDB_Dictionary_Statements():
         logging.info("Selecting specified camps from atom list and applying it...")
         coincidences = 0
         new_pdb_dict = {}
-
-        for organism in organisms:
+        logging.info("Organisms to look: %s" % self.organism_list)
+        for organism in self.organism_list:
             logging.debug("Looking for value/s %s on camp %s inside organism %s..." % (data, camp, organism))
 
             if(not organism in new_pdb_dict):
@@ -53,9 +54,9 @@ class PDB_Dictionary_Statements():
     #------------------------------------------------------------------------------
     # Select range from dictionary
     #------------------------------------------------------------------------------
-    def select_range(self, data, camp, organisms):
+    def select_range(self, data, camp):
         """
-        Select a range of data from a camp inside one or more organisms.
+        Select a range of data from a camp inside one or more self.organism_list.
         It order the data automatically but only accepts two values for
         obvious reasons.
         """
@@ -85,11 +86,11 @@ class PDB_Dictionary_Statements():
             logging.error("Wrong number of values, expected 2.")
 
         if(not self.failed):
-            logging.info("Selecting specified rang from atom list and aplying it...")
+            logging.info("Selecting specified range from atom list and aplying it...")
             coincidences = 0
             new_pdb_dict = {}
-
-            for organism in organisms:
+            logging.info("Organisms to look: %s" % self.organism_list)
+            for organism in self.organism_list:
                 logging.debug("Looking for value/s %s on camp %s inside organism %s..." % (data, camp, organism))
                 if(not organism in new_pdb_dict):
                     new_pdb_dict[organism] = {}
@@ -117,7 +118,7 @@ class PDB_Dictionary_Statements():
     #------------------------------------------------------------------------------
     # Select camps no accurate from dictionary
     #------------------------------------------------------------------------------
-    def select_no_accurate(self, data, camp, organisms):
+    def select_no_accurate(self, data, camp):
         """
         It will take the specified camps like the accurate function but
         it will don't have in consideration the decimals. For this 
@@ -144,8 +145,8 @@ class PDB_Dictionary_Statements():
             logging.info("No strings in Data, non accurate select will proceed...")
             coincidences = 0
             new_pdb_dict = {}
-
-            for organism in organisms:
+            logging.info("Organisms to look: %s" % self.organism_list)
+            for organism in self.organism_list:
 
                 if(not organism in new_pdb_dict):
                     new_pdb_dict[organism] = {}
@@ -172,7 +173,7 @@ class PDB_Dictionary_Statements():
                 logging.info("No coincidences, changes will not be applyied.")
         else:
             logging.info("Calling select in normal mode...")
-            self.select_camps(data, camp, organisms)
+            self.select_camps(data, camp)
     
     def rollback(self, test=False):
         """
@@ -190,6 +191,12 @@ class PDB_Dictionary_Statements():
         called json because it's expected to contain jsonified dictionaries
         but it can contain templates and renders from flask.
         """
-        logging.info("Applying changes to the json variable...")
         logging.info("Clearing json variable...")
+        self.json = None
+        logging.info("Applying changes to the json variable...")
         self.json = jsonify(self.pdb_dict)
+    
+    def organism_list_add(self, organism):
+        for items in organism:
+            if(items not in self.organism_list):
+                self.organism_list.append(items)

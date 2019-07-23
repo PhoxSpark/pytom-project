@@ -1,9 +1,10 @@
-import urllib, os, logging, sys, pickle
-from datetime import datetime
-
-#==============================================================================
-# General pourpose functions
-#==============================================================================
+#
+"""
+General poutpose functions
+"""
+import os
+import logging
+import pickle
 
 #------------------------------------------------------------------------------
 # Split word
@@ -21,29 +22,6 @@ def split(word):
     return list_word
 
 #------------------------------------------------------------------------------
-# Question Y/N
-#------------------------------------------------------------------------------
-def question_y_n(question=""):
-    """
-    Send them an answer and it will return a 'y' or 'n'. It will not
-    continue with answers differents than Yes or No. It only takes
-    the user answer first character and make it lower for return and
-    testing.
-
-    Returns 'y' or 'n'
-    """
-    logging.info("Starting simple question procedure...")
-    answer = ''
-
-    while(answer != 'n' and answer != 'y'):
-        answer = input("Yes (y) or no (n): ")
-        answer = str(answer[0]).lower()
-
-    logging.info("Procedure finished, returning answer...")
-
-    return answer
-
-#------------------------------------------------------------------------------
 # Save object to Pickle
 #------------------------------------------------------------------------------
 def save_obj(obj, name):
@@ -51,13 +29,13 @@ def save_obj(obj, name):
     This function transforms every object send it to him in to a .pkl
     file for future load an persistency of the data.
     """
-    if(not os.path.exists("data/")):
+    if not os.path.exists("data/"):
         logging.info("Path don't exists, creating it.")
         os.makedirs("data/")
 
-    with open("data/"+ name + ".pkl", "wb") as f:
+    with open("data/"+ name + ".pkl", "wb") as file:
         logging.info("Saving...")
-        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(obj, file, pickle.HIGHEST_PROTOCOL)
         logging.info("File saved.")
 
 #------------------------------------------------------------------------------
@@ -71,8 +49,9 @@ def load_obj(name):
     object_load = {}
 
     logging.info("Looking if the file exists...")
-    if(os.path.exists("data/" + name + ".pkl")):
+    if os.path.exists("data/" + name + ".pkl"):
         logging.info("File exists, it will be loaded.")
-        with open("data/" + name + ".pkl", "rb") as f:
-            object_load = pickle.load(f)
-            return object_load
+        with open("data/" + name + ".pkl", "rb") as file:
+            object_load = pickle.load(file)
+
+    return object_load

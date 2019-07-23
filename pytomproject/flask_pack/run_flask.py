@@ -43,14 +43,14 @@ def delete():
     failed = None
     pdb_dict = initial_checks()
     logging.info("Reading specified arguments...")
-    delete = request.args.get("", default = "all", type = str)
+    delete = request.args.get("data", default = "all", type = str)
     if(delete == "all" or delete == "database" or delete == "dictionary"):
         if(delete == "database" or delete == "all"):
             logging.info("Renewing database...")
             db.drop_all()
             db.create_all()
             logging.info("Database was renewed.")
-        
+
         if(delete == "dictionary" or delete == "all"):
             logging.info("Renewing dictionary...")
             pdb_dict = None
@@ -74,7 +74,7 @@ def organism():
     """
     pdb_dict = initial_checks()
     logging.info("Reading specified arguments...")
-    organism = request.args.get("", default = "*", type = str)
+    organism = request.args.get("name", default = "*", type = str)
     if(organism == "*"):
         logging.error("Organism can't be void!")
         logging.info("Operation failed.")
@@ -169,7 +169,7 @@ def select():
     #Takes 2 values integer or float and select all the coincidences between those
     #values. It will sort the values before the function so it doesn't matter where
     #put the max or the min. Also, if the two values are the same aborts the
-    #operation and drops a logging error saying that normal or accurate mode can do 
+    #operation and drops a logging error saying that normal or accurate mode can do
     #that (because it has no sense to make a range from 1.5 to 1.5).
     elif(select_list[2] == "range"):
         logging.info("Range mode recogniced, proceeding...")
@@ -194,7 +194,7 @@ def select():
         save(pdb_dict)
         logging.info("Operation failed.")
         return jsonify("Failed!")
-    
+
 @app.route("/rollback")
 def rollback():
     """

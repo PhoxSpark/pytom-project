@@ -14,7 +14,7 @@ def split(word):
     a list of single characters.
     """
     list_word = []
-    
+
     for character in word:
         list_word.append(character)
 
@@ -25,9 +25,9 @@ def split(word):
 #------------------------------------------------------------------------------
 def question_y_n(question=""):
     """
-    Send them an answer and it will return a 'y' or 'n'. It will not 
-    continue with answers differents than Yes or No. It only takes 
-    the user answer first character and make it lower for return and 
+    Send them an answer and it will return a 'y' or 'n'. It will not
+    continue with answers differents than Yes or No. It only takes
+    the user answer first character and make it lower for return and
     testing.
 
     Returns 'y' or 'n'
@@ -69,7 +69,7 @@ def load_obj(name):
     same type.
     """
     object_load = {}
-    
+
     logging.info("Looking if the file exists...")
     if(os.path.exists("data/" + name + ".pkl")):
         logging.info("File exists, it will be loaded.")

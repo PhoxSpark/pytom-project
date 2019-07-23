@@ -1,50 +1,174 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "description": "Pytom project is an API made as a learning and practicing project for a student in the BSC.",
-        "version": "3.0.0",
-        "title": "Pytom Project",
-        "contact": {
-            "email": "luisgixd1997@gmail.com"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        }
+  "openapi": "3.0.0",
+  "info": {
+    "description": "API Project made by Luis Gracia for practicing and learning in the BSC.",
+    "version": "0.3.2",
+    "title": "Pytom Project",
+    "contact": {
+      "email": "luis.gracia@bsc.es"
     },
-    "servers": [
-        {
-            "url": "/"
-        }
-    ],
-    "paths": {
-        "/delete": {
-            "delete": {
-                "operationId": "delData",
-                "summary": "Delete data",
-                "description": "Delete data from dictionary or database.",
-                "parameters": [
-                    {
-                        "name": "delete",
-                        "required": false,
-                        "in": "path",
-                        "type": "string",
-                        "description": "Write database or dictionary depending on what you want to delete, leave empty for delete both."
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    200: {
-                        "description": "200 response",
-                        "examples": {
-                            "application/json": "Success!"
-                        }
-                    }
-                }
-            }
-        }
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
     }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/organism": {
+      "parameters": [
+        {
+          "in": "query",
+          "name": "name",
+          "required": true,
+          "description": "Organisms to select separed by comma.",
+          "type": "string",
+          "schema": {
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Select Organism"
+        ],
+        "summary": "Internally select organisms",
+        "responses": {
+          "200": {
+            "description": "Success!"
+          }
+        }
+      }
+    },
+    "/delete": {
+      "parameters": [
+        {
+          "in": "query",
+          "name": "data",
+          "required": false,
+          "description": "Delete dictionary or database, default all.",
+          "type": "string",
+          "schema": {
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Delete Data"
+        ],
+        "summary": "Internally delete data",
+        "responses": {
+          "200": {
+            "description": "Success!"
+          }
+        }
+      }
+    },
+    "/rollback": {
+      "get": {
+        "tags": [
+          "Back Results"
+        ],
+        "summary": "Back to last results",
+        "responses": {
+          "200": {
+            "description": "Success!"
+          }
+        }
+      }
+    },
+    "/select": {
+      "parameters": [
+        {
+          "in": "query",
+          "name": "camp",
+          "required": true,
+          "description": "Select the camp of the pdb.",
+          "type": "string",
+          "schema": {
+          }
+        },
+        {
+          "in": "query",
+          "name": "value",
+          "required": true,
+          "description": "Select the value of the camp. For more than one separe with comma.",
+          "type": "string",
+          "schema": {
+          }
+        },
+        {
+          "in": "query",
+          "name": "mode",
+          "required": true,
+          "description": "Select the mode, only valid normal, accurate or range.",
+          "type": "string",
+          "schema": {
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Select Values"
+        ],
+        "summary": "Select values from PDB",
+        "responses": {
+          "200": {
+            "description": "Success!"
+          }
+        }
+      }
+    },
+    "/return": {
+      "get": {
+        "tags": [
+          "Return Results"
+        ],
+        "summary": "Return all the results in JSON",
+        "responses": {
+          "200": {
+            "description": "JSON File"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Organism": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "Example": "2ki5,1ki5"
+          }
+        }
+      },
+      "Delete": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "Options": "dictionary, database, all"
+          }
+        }
+      },
+      "Select": {
+        "properties": {
+          "camp": {
+            "type": "string",
+            "Example": "name"
+          },
+          "value": {
+            "type": "string",
+            "Example": "CA"
+          },
+          "mode": {
+            "type": "string",
+            "Options": "normal, accurate, range"
+          }
+        }
+      }
+    }
+  }
 }
-    

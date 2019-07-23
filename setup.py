@@ -1,15 +1,18 @@
+"""
+Python setup
+"""
 import setuptools
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 setuptools.setup(
     name="pytomproject",
-    version="0.3.2",
+    version="0.3.3",
     author="Luis Gracia",
     author_email="luisgracia@phoxspark.com",
     description="BSC Python Practice for Bioinformatics.",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/PhoxSpark/pytom-project",
     packages=setuptools.find_packages(),

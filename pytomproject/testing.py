@@ -104,5 +104,6 @@ class PytomDatabaseTest(unittest.TestCase):
         """
         Testing the download of the URL.
         """
-        test_download = download_url("name_", "Pytom_Downloads_Test", "https://files.rcsb.org/download/2ki5.pdb", "2ki5")
+        test_download = download_url("name_", "Pytom_Downloads_Test", \
+        "https://files.rcsb.org/download/2ki5.pdb", "2ki5")
         self.assertEqual(test_download, (False, "Pytom_Downloads_Test/name_2ki5.pdb"))

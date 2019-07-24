@@ -52,9 +52,7 @@ class Atom(db.Model):   #pylint: disable=too-few-public-methods
         '{self.segmentid}', '{self.elementsymbol}')"
 
 #==============================================================================
-#------------------------------------------------------------------------------
-# Make URL
-#------------------------------------------------------------------------------
+
 def make_url(url_no_file="https://files.rcsb.org/download/", organism_entry="2ki5"):
     """
     Takes the download URL without the file of the PDB database and the organism entry
@@ -67,9 +65,6 @@ def make_url(url_no_file="https://files.rcsb.org/download/", organism_entry="2ki
     logging.info("URL %s created successfuly", url)
     return url
 
-#------------------------------------------------------------------------------
-# Download URL
-#------------------------------------------------------------------------------
 def download_url(pdb_name, pdb_save_location, url, organism):
     """
     Receive the url, file name and save location and download the file of the url called

@@ -32,9 +32,6 @@ class PdbDictionaryStatements():
     def __init__(self):
         logging.info("PDB_Dictionary initialized.")
 
-    #------------------------------------------------------------------------------
-    # Select camps accurately from dictionary
-    #------------------------------------------------------------------------------
     def select_camps(self, data, camp):
         """
         Select one or more data from one camp on one or more organism inside
@@ -101,9 +98,6 @@ class PdbDictionaryStatements():
 
         return datamin, datamax
 
-    #------------------------------------------------------------------------------
-    # Select range from dictionary
-    #------------------------------------------------------------------------------
     def select_range(self, data, camp):
         """
         Select a range of data from a camp inside one or more self.organism_list.
@@ -150,9 +144,6 @@ class PdbDictionaryStatements():
             else:
                 logging.info("No coincidences, changes will not be applyied.")
 
-    #------------------------------------------------------------------------------
-    # Select camps no accurate from dictionary
-    #------------------------------------------------------------------------------
     def select_no_accurate(self, data, camp):
         """
         It will take the specified camps like the accurate function but

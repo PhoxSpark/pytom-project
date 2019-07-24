@@ -139,7 +139,9 @@ def add_new_organism(name, species, url_no_file="https://files.rcsb.org/download
     failed = True
 
     #Adding organism
+    logging.info("Adding organism...")
     organism_to_add = Organism(name=name, species=species)
+    logging.info("Data to add: %s, %s", name, species)
     db.session.add(organism_to_add) #pylint: disable=no-member
     db.session.commit() #pylint: disable=no-member
 

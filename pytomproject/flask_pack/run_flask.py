@@ -10,6 +10,8 @@ from .pytom_database import Organism, Atom, add_new_organism
 from .pdb_dictionary_statements import PdbDictionaryStatements
 from . import app, db
 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
 SWAGGER_URL = "/swagger"
 API_URL = "/static/swagger.json"
 SWAGGERIO_BLUEPRINT = get_swaggerui_blueprint(
@@ -53,40 +55,40 @@ def organism_loop(group, pdb_dict, organism_selection):
                 del atom['id']
                 if "ATOM" not in atom_dict:
                     atom_dict[atom["order"]] = atom
-
                     pdb_dict.pdb_dict[group] = {"ATOM": atom_dict}
                     pdb_dict.organism_list_add(organism_selection)
-                    logging.info("Organisms %s added to list.", pdb_dict.organism_list)
-                    save(pdb_dict)
-                    logging.info("Operation successful.")
-                    failed = jsonify("Success!")
-    return failed
+    return pdb_dict
 
 def organism_split(pdb_dict, organism_selection):
     """
     Split the organism entered by the user and Check
     if it actually exists on the database.
     """
+    failed = None
     logging.info("Organism specified, splitting it...")
     organism_selection = organism_selection.split(',')
     for group in organism_selection:
-        logging.info("Checking organism if organism %s exist...", group)
+        logging.info("Checking if organism %s exist...", group)
         exists = db.session.query(db.exists().where(Organism.name == group)).scalar()   #pylint: disable=no-member
-
+        logging.info("Organism exists: %s", exists)
         if not exists:
             logging.info("Organism %s not found! It will be created.", group)
             pdb_dict.failed = add_new_organism(group, "Unspecified")
-
             if not pdb_dict.failed:
                 logging.info("Checking if %s exists in dictionary...", group)
 
                 if group not in pdb_dict.pdb_dict:
+                    failed = jsonify("Success!")
                     logging.info("%s not found! It will be added in the dictionary.", group)
-                    failed = organism_loop(group, pdb_dict, organism_selection)
+                    pdb_dict = organism_loop(group, pdb_dict, organism_selection)
+                    save(pdb_dict)
+                else:
+                    logging.info("Organism found.")
+                    failed = jsonify("Success!")
 
-            else:
-                failed = jsonify("Error!")
-
+        else:
+            failed = jsonify("Failed!")
+    logging.info("Returning results...")
     return failed
 
 @app.route("/static/<path:path>")
@@ -117,7 +119,8 @@ def delete():
             logging.info("Renewing dictionary...")
             pdb_dict = None
             pdb_dict = PdbDictionaryStatements()
-            os.remove("Data/dictionary.pkl")
+            if os.path.exists("data/" + "dictionary" + ".pkl"):
+                os.remove("Data/dictionary.pkl")
         save(pdb_dict)
         logging.info("Operation successful.")
         failed = jsonify("Success!")
@@ -146,6 +149,7 @@ def organism():
 
     else:
         failed = organism_split(pdb_dict, organism_selection)
+        logging.info("Data returned.")
 
     return failed
 

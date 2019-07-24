@@ -14,8 +14,9 @@ def go_to_accurate_function(go_to_accurate, data):
                 logging.warning("%s is a string! Can't apply a non accurate select.", selection)
                 go_to_accurate = True
                 break
-        else:
-            data[i] = int(data[i])
+            else:
+                logging.info("Converting %s in to integer.", data[i])
+                data[i] = int(data[i])
     return go_to_accurate, data
 
 class PdbDictionaryStatements():
